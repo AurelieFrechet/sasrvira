@@ -1,36 +1,41 @@
 #  source : https://www.listendata.com/2015/01/sas-detailed-explanation-of-proc-means.html
 
 test_that("Simple Example", {
-  text = split_SAS_procedures("Proc Means Data = test;
-  Var q1 - q5;
-  Run;")
+ text = c("data = test",
+          "var q1")
+ list(data = "test",
+      var = "q1")
 })
 
-test_that("Limit Descriptive Statistics", {
-  "Proc Means Data = test N NMISS;
-  Var q1 - q5 ;
-  Run;;"
+test_that("Listing var", {
+  text = c("data = test n nmiss",
+           "var q1 - q5")
+
+  list(data = "test",
+       stats = c("n", "nmiss"),
+       var= c("q1", "q2", "q3", "q4", "q5"))
 })
 
 test_that("Change Sorting Order", {
-  "Proc Means Data = test;
-  Class Age / descending;
-  Var q1 - q5 ;
-  Run;"
+  text = c("data = test",
+           "class age / descending",
+           "var q1")
+  list(data = "test",
+       by = c("age"),
+       by_options = c("descending"),
+       var = "q1")
 })
 
-test_that("Group the analysis", {
-  "Proc Means data = test N NMISS NOLABELS;
-  Class Age;
-  Var q1 - q5;
-  Run;"
+test_that("types with class", {
+  c("data=grade maxdec=3",
+    "var Score",
+    "class Status Year",
+    "types () status*year")
+  list(data = "test",
+       by = c("Status", "Year"),
+       var = "Score")
 })
 
 
-test_that("with output", {
-  "Proc Means Data = test noprint;
-Class Age ;
-Var q1 q2;
-Output out=F1 mean=  / autoname autolabel;
-Run;"
-})
+
+

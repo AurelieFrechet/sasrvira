@@ -1,4 +1,4 @@
-Package: saservira
+Package: sasrvira
 Type: Package
 Title: Convert SAS code into R
 Version: 0.1.0
@@ -9,11 +9,13 @@ Depends: stringr, stringi, dplyr
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.0.2
+RoxygenNote: 7.3.3
 Collate: 
     'decoupe.R'
     'expressions.R'
+    'get_SAS_procedure.R'
     'paste_functions.R'
+    'read_SAS_proc_means.R'
     'sasr_contents.R'
     'sasr_data.R'
     'sasr_freq.R'
@@ -24,6 +26,7 @@ Collate:
     'sasr_sort.R'
     'utils.R'
     'sasr_sql.R'
+    'split_SAS_procedures.R'
     'transcripteur.R'
 Suggests: 
     testthat (>= 2.1.0)

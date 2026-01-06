@@ -1,0 +1,34 @@
+---
+title: "V1 Expectations"
+author: "Aurélie Fréchet"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
+## Proc Means
+
+Working example
+```
+PROC MEANS DATA = iris
+  N MEAN MIN MAX;
+  VAR Sepal.Length;
+RUN;
+```
+
+Error expected: missing data
+```
+PROC MEANS
+  N MEAN MIN MAX;
+  VAR Sepal.Length;
+RUN;
+```
+
+Warning: stats un-specified
+```
+PROC MEANS DATA = iris;
+  VAR Sepal.Length;
+RUN;
+```
+
+

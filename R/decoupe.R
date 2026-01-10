@@ -19,61 +19,30 @@
 #' @examples
 decouper_SAS <- function(code_sas) {
   # PROCEDURES : proc mot [...] run;/quit;
-  locate_proc <- str_locate_all(
-    code_sas,
-    regex(pattern =   "(?=(proc \\w+))[\\s\\S]*?(?<=(run;|quit;))",
-          multiline = TRUE,
-          ignore_case = TRUE)
-  )[[1]]
-  match_proc  <- str_match_all(
-    code_sas,
-    regex(pattern =  "(?=(proc \\w+))[\\s\\S]*?(?<=(run;|quit;))",
-          multiline = TRUE,
-          ignore_case = TRUE)
-  )[[1]]
+  locate_proc <- locate_string(x = code_sas, pattern = "(proc \\w+)([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
+  match_proc  <-  match_multiple_string(x = code_sas, pattern = "(proc \\w+)([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
 
   # ETAPES DATA : data [...] run;
-  locate_data <- str_locate_all(code_sas,
-                                regex(pattern   = "(?=(^data))[\\s\\S]*?(?<=(run;))",
-                                      multiline = TRUE,
-                                      ignore_case = TRUE))[[1]]
-  match_data  <- str_match_all(code_sas,
-                               regex(pattern   = "(?=(^data))[\\s\\S]*?(?<=(run;))",
-                                     multiline = TRUE,
-                                     ignore_case = TRUE))[[1]]
+  locate_data <- locate_string(x = code_sas, pattern = "(data(?!.*=))([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
+  match_data  <- match_multiple_string(x = code_sas, pattern = "(data(?!.*=))([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
 
   # COMMENTAIRES 1 LIGNE
-  locate_c1   <- str_locate_all(code_sas,
-                                regex(pattern   = "(?=(^(\\s)*?\\*)).*?(?=\\n)",
-                                      multiline = TRUE))[[1]]
-  match_c1  <- str_match_all(code_sas,
-                             regex(pattern   = "(?=(^(\\s)*?\\*)).*?(?=\\n)",
-                                   multiline = TRUE))[[1]]
+  locate_c1 <- locate_string(x = code_sas, pattern = "\\n\\s+?\\*(.*?);\\n", ignore.case = T, perl = T)
+  match_c1  <- match_multiple_string(x = code_sas, pattern = "\\n\\s+?\\*(.*?);\\n", ignore.case = T, perl = T)
 
   # COMMENTAIRES MULTIGNES
-  locate_c2   <- str_locate_all(code_sas,
-                                regex(pattern   = "(?=(\\/\\*))[\\s\\S]*?(?<=(\\*\\/))",
-                                      multiline = TRUE))[[1]]
-  match_c2    <- str_match_all(code_sas,
-                               regex(pattern   = "(?=(\\/\\*))[\\s\\S]*?(?<=(\\*\\/))",
-                                     multiline = TRUE))[[1]]
-
-
+  locate_c2 <- locate_string(x = code_sas, pattern = "\\/\\*([\\s\\S]*?)\\*\\/", ignore.case = T, perl = T)
+  match_c2  <- match_multiple_string(x = code_sas, pattern = "\\/\\*([\\s\\S]*?)\\*\\/", ignore.case = T, perl = T)
 
   return(list(
-    place = rbind(locate_proc,
-                  locate_data,
-                  locate_c1,
-                  locate_c2),
-    texte = c(match_proc[, 1],
-              match_data[, 1],
-              match_c1[, 1],
-              match_c2[, 1]),
-    id = tolower(
-      str_trim(c(match_proc[, 2],
-           match_data[, 2],
-           match_c1[, 2],
-           match_c2[, 2])))
+    place = rbind(locate_proc, locate_data, locate_c1, locate_c2),
+    texte = trimws(c(match_proc[[2]], match_data[[2]], match_c1[[1]], match_c2[[1]])),
+    id = c(
+      trimws(match_proc[[1]]),
+      if(is.null(locate_data)) NULL else rep("data", nrow(locate_data)),
+      if(is.null(locate_c1)) NULL else rep("*;",   nrow(locate_c1)),
+      if(is.null(locate_c2)) NULL else rep("/**/", nrow(locate_c2))
+    )
   ))
 }
 

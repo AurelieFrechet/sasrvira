@@ -16,6 +16,7 @@ Collate:
     'get_SAS_procedure.R'
     'paste_functions.R'
     'read_SAS_proc_means.R'
+    'regex_utils.R'
     'sasr_contents.R'
     'sasr_data.R'
     'sasr_freq.R'

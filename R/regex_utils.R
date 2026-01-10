@@ -18,11 +18,23 @@ match_multiple_string <- function(x, pattern, nb_group = NULL, ignore.case = T, 
 
   if(is.null(nb_group)) nb_group <- lengths(regmatches(pattern, gregexpr('\\(', pattern)))
 
-  sapply(1:nb_group, function(i){
+  lapply(1:nb_group, function(i){
     match_string(x = res, pattern = pattern, group = i, ignore.case = ignore.case, perl = perl)
     })
 }
 
-paste_function <- function(fonction, contenu){
-  paste0(fonction, "(", contenu, ")")
+locate_string <- function(x, pattern, ignore.case = T, perl = T, ...){
+  m <- gregexpr(pattern, text = x, ignore.case = ignore.case, perl = perl)
+  res <- regmatches(x, m)[[1]]
+  if(identical(res, character(0))) return(NULL)
+
+  m_start <- as.numeric(m[[1]])
+  m_length <- as.numeric(attributes(m[[1]])$match.length)
+  m_end <- m_start + m_length - 1
+
+  return(data.frame(start = m_start, end = m_end))
+  }
+
+paste_function <- function(function_name, content){
+  paste0(function_name, "(", content, ")")
 }

@@ -9,8 +9,7 @@ sasr_means <- function(code_sas){
     str_replace_all(pattern = "\n",   replacement = " ") %>%
     str_replace_all(pattern = "=",    replacement = " ") %>%
     str_replace_all(pattern = "\\s+", replacement = " ") %>%
-    decoupe_requete(requete = .,
-                    key_words = c("data",
+    decoupe_requete(keywords = c("data",
                                   "by",
                                   "class",
                                   "format",
@@ -25,7 +24,7 @@ sasr_means <- function(code_sas){
 
 
   # Découpe DATA=data <option> -------------------------------------------------
-  means_data <- code_net$text[(code_net$kw == "data")] %>%
+  means_data <- code_net$text[(code_net$key_word == "data")] %>%
     str_split("\\s+") %>%
     unlist()
   # le premier mot correspond aux données,
@@ -35,7 +34,7 @@ sasr_means <- function(code_sas){
 
 
 # Sélection des variables ----------------------------------------------------
-  means_var <- code_net$text[(code_net$kw == "var")]
+  means_var <- code_net$text[(code_net$key_word == "var")]
   dplyr_select <- NA
   if (!identical(means_var, character(0))) {
     dplyr_select <- means_var %>%
@@ -71,12 +70,12 @@ sasr_means <- function(code_sas){
   # Cas OUTPUT -----------------------------------------------------------------
   # Défini nom de la table de sortie et les noms de variables crées
   output <- FALSE
-  if (any((code_net$kw == "output"))) {
+  if (any((code_net$key_word == "output"))) {
     output <- TRUE
-    means_output <- code_net$text[(code_net$kw == "output")] %>%
+    means_output <- code_net$text[(code_net$key_word == "output")] %>%
       decoupe_requete(
         requete = .,
-        key_words = c("out", "n", "mean", "std", "skewness", "kurtosis") # TODO  préparer un vecteur de mots clés
+        keywords = c("out", "n", "mean", "std", "skewness", "kurtosis") # TODO  préparer un vecteur de mots clés
       )
 
     variables <- means_var %>%
@@ -87,12 +86,12 @@ sasr_means <- function(code_sas){
     dplyr_summarize <- sapply(
       c("n", "mean", "std", "skewness", "kurtosis"),
       FUN = function(indic) {
-        noms_variables <- means_output$text[(means_output$kw == indic)] %>%
+        noms_variables <- means_output$text[(means_output$key_word == indic)] %>%
           str_split(pattern = "\\s+") %>%
           unlist()
         nb  <- length(noms_variables)
 
-        if (any(means_output$kw == indic)) {
+        if (any(means_output$key_word == indic)) {
           return(paste0(noms_variables, " = ", indic, "(", variables[1:nb], ")"))
         }
       }
@@ -102,7 +101,7 @@ sasr_means <- function(code_sas){
       paste0("summarize(", ., ")") %>%
       transform_functions()
 
-    dplyr_data <- paste0(means_output$text[(means_output$kw == "out")],
+    dplyr_data <- paste0(means_output$text[(means_output$key_word == "out")],
                          " <- ",
                          dplyr_data)
 
@@ -110,9 +109,9 @@ sasr_means <- function(code_sas){
 
   # Regroument BY et CLASS -----------------------------------------------------
   dplyr_groupby <- NA
-  if (any(code_net$kw == "by") | any(code_net$kw == "class")) {
-  dplyr_groupby <- paste(code_net$text[(code_net$kw == "by")],
-                         code_net$text[(code_net$kw == "class")]) %>%
+  if (any(code_net$key_word == "by") | any(code_net$key_word == "class")) {
+  dplyr_groupby <- paste(code_net$text[(code_net$key_word == "by")],
+                         code_net$text[(code_net$key_word == "class")]) %>%
     str_trim() %>%
     str_replace_all(pattern = "\\s+", replacement = ", ") %>%
     paste0("group_by(", ., ")")

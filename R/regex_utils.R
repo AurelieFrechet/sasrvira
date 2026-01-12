@@ -38,3 +38,7 @@ locate_string <- function(x, pattern, ignore.case = T, perl = T, ...){
 paste_function <- function(function_name, content){
   paste0(function_name, "(", content, ")")
 }
+
+clean_newlines <- function(text, ...){
+  gsub2(x = text, pattern = "\\s|\\r\\n\\t", " ", ...)
+}

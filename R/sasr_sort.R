@@ -19,8 +19,9 @@ sasr_sort <- function(code_sas) {
    # BY
    script <- code_net$text[code_net$key_word == "by"] |>
       gsub2(pattern = "descending\\s(\\w+)", replacement = "desc(\\1)") |>
-      gsub2(pattern = "\\s+", replacement = ", ") |>
-      paste0(new_data, " |> arrange(", ., ")")
+      gsub2(pattern = "\\s+", replacement = ", ")
+
+   script <- paste0(new_data, " %>% arrange(", script , ")")
 
 
    # Si option OUT écriture dans un objet

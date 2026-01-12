@@ -50,12 +50,21 @@ test_that("decoupe sql - Cas vide", {
 
 })
 
-test_that("Cas avec le mot clé contenu dans un mot", {
-  phrase <- "Ceci n'est pas une phrase à découper"
-  sentence <- decoupe_requete(requete = phrase, keywords = "as")
-  expect_null(sentence)
+test_that("first argument split", {
+  expect_no_error(sentence1 <- decoupe_requete(requete = "data sashelp.iris", keywords = c("data")))
+  expect_no_error(sentence2 <- decoupe_requete(requete = "   data sashelp.iris", keywords = c("data")))
+  expect_equal(sentence1$key_word, "data")
+  expect_equal(sentence2$key_word, "data")
+  expect_equal(sentence1$text, "sashelp.iris")
+  expect_equal(sentence2$text, "sashelp.iris")
 })
 
+
+test_that("Cas avec le mot clé contenu dans un mot", {
+  phrase <- "Ceci n'est pas une phrase à découper"
+  sentence <- decoupe_requete(requete = phrase, keywords = c("as", "e", "r", "C"))
+  expect_null(sentence)
+})
 
 # decouper_SAS ------------------------------------------------------------
 

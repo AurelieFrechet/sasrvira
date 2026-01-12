@@ -195,9 +195,10 @@ sql_to_dplyr <- function(code_sql) {
   dplyr_join    <- NA
   affectation   <- NA
 
+  code_sql <- remove_string(code_sql, ";")
   # Initialisation
   sentence <- decoupe_requete(code_sql,
-                              key_words = c("select",
+                              keywords = c("select",
                                             "from",
                                             "where",
                                             "order by",
@@ -211,13 +212,11 @@ sql_to_dplyr <- function(code_sql) {
 
 
 
-
-
   #  FROM ----
   # TODO : Détecter les abréviations FROM table_machin t1
   # TODO : gestion plusieurs tables
-  if (any(sentence$kw == "from")) {
-    from_vector <- sentence$text[(sentence$kw == "from")] %>%
+  if (any(sentence$key_word == "from")) {
+    from_vector <- sentence$text[(sentence$key_word == "from")] %>%
       str_split(pattern = ",") %>%
       unlist()
 
@@ -230,8 +229,8 @@ sql_to_dplyr <- function(code_sql) {
   }
 
   # CREATE TABLE ----
-  if (any(sentence$kw == "create table")) {
-    lecture <- sentence$text[(sentence$kw == "create table")] %>%
+  if (any(sentence$key_word == "create table")) {
+    lecture <- sentence$text[(sentence$key_word == "create table")] %>%
       str_match(pattern = regex("([\\S]+)\\s(as|like)?(\\s[\\S]+)?", ignore_case = T))
 
     nom_table <-  lecture[, 2]
@@ -249,9 +248,9 @@ sql_to_dplyr <- function(code_sql) {
   }
 
   # JOIN ----
-  if (any(str_detect(sentence$kw, "join"))) {
-    join_expression <- sentence$text[str_detect(sentence$kw, "join")]
-    nom_jointures   <- sentence$kw[str_detect(sentence$kw, "join")]%>%
+  if (any(str_detect(sentence$key_word, "join"))) {
+    join_expression <- sentence$text[str_detect(sentence$key_word, "join")]
+    nom_jointures   <- sentence$key_word[str_detect(sentence$key_word, "join")]%>%
       tolower() %>%
       str_replace(pattern = "\\s+", "_")
 
@@ -265,12 +264,12 @@ sql_to_dplyr <- function(code_sql) {
     } else {
       tables_jointures      <- join_expression %>% unlist()
       conditions_jointures  <- str_extract_all(
-        sentence$text[str_detect(sentence$kw, "where")],
+        sentence$text[str_detect(sentence$key_word, "where")],
         pattern = "\\w+\\.\\w+\\s*=\\s*\\w+\\.\\w++"
       ) %>%
         unlist()
-      sentence$text[str_detect(sentence$kw, "where")] <- str_remove_all(
-        sentence$text[str_detect(sentence$kw, "where")],
+      sentence$text[str_detect(sentence$key_word, "where")] <- str_remove_all(
+        sentence$text[str_detect(sentence$key_word, "where")],
         pattern = "\\w+\\.\\w+\\s*=\\s*\\w+\\.\\w++"
       )
     }
@@ -298,10 +297,10 @@ sql_to_dplyr <- function(code_sql) {
 
 
   # WHERE ----
-  if (any(sentence$kw == "where")) {
+  if (any(sentence$key_word == "where")) {
     # If non-empty WHERE (because of JOIN cleaning)
-    if (str_trim(sentence$text[(sentence$kw == "where")]) != "") {
-      dplyr_filter <- sentence$text[(sentence$kw == "where")] %>%
+    if (str_trim(sentence$text[(sentence$key_word == "where")]) != "") {
+      dplyr_filter <- sentence$text[(sentence$key_word == "where")] %>%
         transform_conditions() %>%
         paste0("filter(", ., ")")
     }
@@ -309,21 +308,21 @@ sql_to_dplyr <- function(code_sql) {
 
 
   # GROUP BY ----
-  if (any(sentence$kw == "group by")) {
+  if (any(sentence$key_word == "group by")) {
     # Soustraction des var du group by au select
-    var_groupby <- sentence$text[(sentence$kw == "group by")] %>%
+    var_groupby <- sentence$text[(sentence$key_word == "group by")] %>%
       str_split(pattern = ',') %>%
       unlist() %>%
       str_trim()
 
 
-    var_select <- sentence$text[(sentence$kw == "select")] %>%
+    var_select <- sentence$text[(sentence$key_word == "select")] %>%
       str_split(pattern = ',') %>%
       unlist() %>%
       str_trim()
 
 
-    sentence$text[(sentence$kw == "select")] <-
+    sentence$text[(sentence$key_word == "select")] <-
       setdiff(var_select, var_groupby) %>%
       paste(., collapse = ", ")
 
@@ -334,25 +333,25 @@ sql_to_dplyr <- function(code_sql) {
 
 
   # HAVING ----
-  if (any(sentence$kw == "having")) {
-    dplyr_filter <- sentence$text[(sentence$kw == "having")] %>%
+  if (any(sentence$key_word == "having")) {
+    dplyr_filter <- sentence$text[(sentence$key_word == "having")] %>%
       transform_conditions() %>%
       paste0("filter(", ., ")")
   }
 
   # SELECT ----
-  if (sentence$text[(sentence$kw == "select")] != "*"
-      & any(sentence$kw == "select")) {
+  if (sentence$text[(sentence$key_word == "select")] != "*"
+      & any(sentence$key_word == "select")) {
     # Détecter les prefixes et les supprimer
     # Note : choix de tout supprimer peut-être à revoire plus tard
-    dplyr_select <- sentence$text[(sentence$kw == "select")] %>%
+    dplyr_select <- sentence$text[(sentence$key_word == "select")] %>%
       str_remove_all(pattern = "\\w+\\.") %>%
       sql_dplyr_select()
   }
 
   # ORDER BY ----
-  if (any(sentence$kw == "order by")) {
-    dplyr_arrange <- sentence$text[(sentence$kw == "order by")] %>%
+  if (any(sentence$key_word == "order by")) {
+    dplyr_arrange <- sentence$text[(sentence$key_word == "order by")] %>%
       str_replace_all(pattern = regex("([\\S]+)\\sdesc", ignore_case = T),
                       replacement = "-\\1") %>%
       paste0("arrange(", . , ")")

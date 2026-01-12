@@ -18,6 +18,9 @@
 #'
 #' @examples
 decouper_SAS <- function(code_sas) {
+  # Clean newlines
+  code_sas <-  clean_newlines(code_sas)
+
   # PROCEDURES : proc mot [...] run;/quit;
   locate_proc <- locate_string(x = code_sas, pattern = "(proc \\w+)([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
   match_proc  <-  match_multiple_string(x = code_sas, pattern = "(proc \\w+)([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
@@ -60,22 +63,26 @@ decouper_SAS <- function(code_sas) {
 #'
 #' @examples
 decoupe_requete <- function(requete, keywords){
+  # Clean spaces and newlines
+  requete <-  clean_newlines(requete)
+
 pattern_kw <- paste0('(?i)',                         # insensible à la casse
-                     '"[^"]*"(*SKIP)(*F)|',          # ignorer guillemets doubles
+                     '"[^"\']*"(*SKIP)(*F)|',          # ignorer guillemets doubles
                      "'[^']*'(*SKIP)(*F)|",          # ignorer guillemets simples
-                     '(?<=.)(?=(\\b', paste(keywords, collapse="|"), ')\\b)')
+                     '(?<=.)(?=(', paste(paste0("\\b", keywords, "\\b"), collapse="|"), '))',
+                     '|(?=.)(?<=(', paste(paste0("\\b", keywords, "\\b"), collapse="|"), '))')
 
 if(!grepl(pattern = pattern_kw, x = requete, ignore.case = T, perl = T)){
   message("Requete does not contain key words")
   return(NULL)
 }
 
-parts <- strsplit(requete,
+parts <- strsplit(trimws(requete),
                   pattern_kw,
                   perl=TRUE)[[1]]
 
-key_word = tolower(sub(paste0("^\\s*(", paste(keywords, collapse="|"), ").*"), "\\1", parts, ignore.case=TRUE))
-content  = trimws(sub(paste0("^(", paste(keywords, collapse="|"), ")\\s*"), "", parts, ignore.case=TRUE))
+key_word = tolower(parts[seq(1, length(parts)-1, by = 2)])
+content  = trimws(parts[seq(2, length(parts), by = 2)])
 
 
   return(list(key_word = key_word, text = content))

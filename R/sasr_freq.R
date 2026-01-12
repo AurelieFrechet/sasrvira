@@ -8,7 +8,7 @@ sasr_freq <-function(code_sas){
     gsub2(pattern = "\\s+", replacement = " ") |>
     decoupe_requete(
       requete = .,
-      key_words = c("data",
+      keywords = c("data",
                     "by",
                     "exact",
                     "output",

@@ -1,7 +1,7 @@
 globalVariables(c("."))
 
 reecriture <- function(id, code) {
-  switch(id,
+  switch(tolower(id),
          "proc sql" = {
            sasr_sql(code)
          },
@@ -52,7 +52,7 @@ traducteur <- function(code_sas) {
     ) %>% unlist()
 
 
-    stri_sub_all(str = code_sas, code_decoupe$place) <-
+    stri_sub_all(str = code_sas, from = code_decoupe$place$start, to = code_decoupe$place$end) <-
       code_decoupe$traduction
   }
 

@@ -4,7 +4,7 @@
 \alias{decoupe_requete}
 \title{decoupe_requete}
 \usage{
-decoupe_requete(requete, key_words)
+decoupe_requete(requete, keywords)
 }
 \arguments{
 \item{requete}{une seule requete sql}

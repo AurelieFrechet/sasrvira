@@ -1,29 +1,26 @@
 sasr_sort <- function(code_sas) {
    # Nettoyage et découpage de la procédure
-   code_net <- code_sas %>%
-      str_remove_all(pattern = regex("proc\\ssort\\s", ignore_case = T)) %>%
-      str_remove_all(pattern = regex("run\\s*;", ignore_case = T)) %>%
-      str_remove_all(pattern = ";") %>%
-      str_replace_all(pattern = "\n", replacement = " ") %>%
-      str_replace_all(pattern = "=", replacement = " ") %>%
-      str_replace_all(pattern = "\\s+", replacement = " ") %>%
-      decoupe_requete(requete = .,
-                      key_words = c("data", "out", "by"))
+   code_net <- code_sas |>
+     remove_string(pattern = regex("proc\\ssort\\s", ignore_case = T)) |>
+     remove_string(pattern = regex("run\\s*;", ignore_case = T)) |>
+     remove_string(pattern = ";") |>
+     gsub2(pattern = "\n", replacement = " ") |>
+     gsub2(pattern = "=", replacement = " ") |>
+     gsub2(pattern = "\\s+", replacement = " ") |>
+      decoupe_requete(keywords = c("data", "out", "by"))
 
    # DATA
-   new_data <- code_net$text[code_net$kw == "data"]
+   new_data <- code_net$text[code_net$key_word == "data"]
 
    # OUT : Optionnel
-   new_out <- code_net$text[code_net$kw == "out"]
+   new_out <- code_net$text[code_net$key_word == "out"]
 
 
    # BY
-   script <- code_net$text[code_net$kw == "by"] %>%
-      str_replace_all(pattern = "descending\\s(\\w+)",
-                      replacement = "desc(\\1)") %>%
-      str_replace_all(pattern = "\\s+",
-                      replacement = ", ") %>%
-      paste0(new_data, " %>% arrange(", ., ")")
+   script <- code_net$text[code_net$key_word == "by"] |>
+      gsub2(pattern = "descending\\s(\\w+)", replacement = "desc(\\1)") |>
+      gsub2(pattern = "\\s+", replacement = ", ") |>
+      paste0(new_data, " |> arrange(", ., ")")
 
 
    # Si option OUT écriture dans un objet

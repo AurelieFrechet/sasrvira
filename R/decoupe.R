@@ -59,38 +59,24 @@ decouper_SAS <- function(code_sas) {
 #' @export
 #'
 #' @examples
-decoupe_requete <- function(requete, key_words){
-  # Mise sous forme de mots :
-  key_words <- paste0("\\b", key_words, "\\b")
-  # Definition des mots clés
-  pattern_kw <- paste(paste0("(?=", key_words, ")"),
-                      collapse = "|")
+decoupe_requete <- function(requete, keywords){
+pattern_kw <- paste0('(?i)',                         # insensible à la casse
+                     '"[^"]*"(*SKIP)(*F)|',          # ignorer guillemets doubles
+                     "'[^']*'(*SKIP)(*F)|",          # ignorer guillemets simples
+                     '(?<=.)(?=(\\b', paste(keywords, collapse="|"), ')\\b)')
 
-  # Decoupe
-  sentence <- str_split(string = requete,
-                        pattern = regex(pattern_kw, ignore_case = T))[[1]] %>%
-    str_trim() %>%
-    {
-      .[!(. == "")]
-    }
+if(!grepl(pattern = pattern_kw, x = requete, ignore.case = T, perl = T)){
+  message("Requete does not contain key words")
+  return(NULL)
+}
+
+parts <- strsplit(requete,
+                  pattern_kw,
+                  perl=TRUE)[[1]]
+
+key_word = tolower(sub(paste0("^\\s*(", paste(keywords, collapse="|"), ").*"), "\\1", parts, ignore.case=TRUE))
+content  = trimws(sub(paste0("^(", paste(keywords, collapse="|"), ")\\s*"), "", parts, ignore.case=TRUE))
 
 
-  # Identification
-  kw <- str_extract(string = tolower(sentence),
-                    pattern = paste(key_words, collapse = "|"))
-
-  # Nettoyage
-  kw_pattern <- paste(key_words, collapse = "|")
-  sentence <- sentence %>%
-    str_replace_all(pattern = regex(kw_pattern, ignore_case = T),
-                    replacement = "") %>%
-    str_trim()
-
-  # Messages d'erreur
-  if(all(is.na(kw))){
-    message("Requete does not contain key words")
-    return(NULL)
-  }
-
-  return(list(kw = kw, text = sentence))
+  return(list(key_word = key_word, text = content))
 }

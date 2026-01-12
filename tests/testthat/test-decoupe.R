@@ -3,15 +3,21 @@
 # decoupe_requete --------------------------------------------------------
 
 test_that("decoupe sql - Cas normal", {
-  code_sql <- "select * from table where nom=\"frechet\""
-  sentence <- decoupe_requete(code_sql,
-                              key_words = c("select", "from", "where", "order by", "group by", "limit"))
+  code_sql <- "select a, b
+          from table1 t1
+          join table2 t2 on t1.id=t2.id
+          where t1.nom='order by test'
+          group by a
+          having count(*)>1
+          order by a, b"
+  sentence <- decoupe_requete(requete = code_sql,
+                              keywords = c("select", "from", "join","where", "group by", "having", "order by", "limit"))
   expect_length(sentence, 2)
-  expect_length(sentence$kw, 3)
-  expect_length(sentence$text, 3)
-  expect_equal(sentence$kw, c("select", "from", "where"))
+  expect_length(sentence$key_word, 7)
+  expect_length(sentence$text, 7)
+  expect_equal(sentence$key_word, c("select", "from", "join","where", "group by", "having", "order by"))
   compare(sentence$text,
-          c("*", "table", "nom=\"frechet\""),
+          c("a, b", "table t1", "table2 t2 on t1.id=t2.id", "t1.nom='order by test'", "a", "count(*)>1", "a, b"),
           check.attributes = FALSE,)
 
 })
@@ -19,11 +25,11 @@ test_that("decoupe sql - Cas normal", {
 test_that("decoupe sql - Ignore CASE", {
   code_sql <- "SELECT * FROM table WHERE nom=\"Frechet\""
   sentence <- decoupe_requete(code_sql,
-                              key_words = c("select", "from", "where", "order by", "group by", "limit"))
+                              keywords = c("select", "from", "where", "order by", "group by", "limit"))
   expect_length(sentence, 2)
-  expect_length(sentence$kw, 3)
+  expect_length(sentence$key_word, 3)
   expect_length(sentence$text, 3)
-  expect_equal(sentence$kw, c("select", "from", "where"))
+  expect_equal(sentence$key_word, c("select", "from", "where"))
   compare(sentence$text,
           c("*", "table", "nom=\"frechet\""),
           check.attributes = FALSE,)
@@ -34,11 +40,11 @@ test_that("decoupe sql - Ignore CASE", {
 test_that("decoupe sql - Cas vide", {
   code_sql <- "phrase qui n'a aucun rapport"
   sentence <- decoupe_requete(code_sql,
-                              key_words = c("select", "from", "where", "order by", "group by", "limit"))
+                              keywords = c("select", "from", "where", "order by", "group by", "limit"))
   expect_null(sentence)
   expect_message(decoupe_requete(
     code_sql,
-    key_words = c("select", "from", "where", "order by", "group by", "limit")
+    keywords = c("select", "from", "where", "order by", "group by", "limit")
   ),
   "Requete does not contain key words")
 
@@ -46,7 +52,7 @@ test_that("decoupe sql - Cas vide", {
 
 test_that("Cas avec le mot clé contenu dans un mot", {
   phrase <- "Ceci n'est pas une phrase à découper"
-  sentence <- decoupe_requete(requete = phrase, key_words = "as")
+  sentence <- decoupe_requete(requete = phrase, keywords = "as")
   expect_null(sentence)
 })
 

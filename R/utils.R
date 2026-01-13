@@ -68,7 +68,8 @@ transform_conditions <- function(chaine){
 transform_casewhen <- function(chaine){
   chaine <- chaine |>
     remove_string(pattern = "\\b(case|end)\\b", ignore.case = T, perl = T) |>
-    remove_string(pattern = "\n")
+    remove_string(pattern = "\n") |>
+    trimws()
 
   when_then <-
     match_multiple_string(
@@ -80,7 +81,7 @@ transform_casewhen <- function(chaine){
     )
 
   requete <-
-    paste(when_then[, 1], when_then[, 2], sep = " ~ ") |>
+    paste(when_then[[1]], when_then[[2]], sep = " ~ ") |>
     paste(collapse = ",\n")
 
   else_then <-

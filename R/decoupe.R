@@ -18,8 +18,6 @@
 #'
 #' @examples
 decouper_SAS <- function(code_sas) {
-  # Clean newlines
-  code_sas <-  clean_newlines(code_sas)
 
   # PROCEDURES : proc mot [...] run;/quit;
   locate_proc <- locate_string(x = code_sas, pattern = "(proc \\w+)([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)

@@ -5,7 +5,6 @@ Version: 0.1.0
 Author: Aurélie Fréchet
 Maintainer: Aurélie Fréchet <aurelie@datartist.fr>
 Description: Use regex to read and transform SAS code into R. Be cautious with the use, this is not supposed to be used on massive code, just extract to help transitions.
-Depends: stringr, stringi, dplyr
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true

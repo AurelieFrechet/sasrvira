@@ -1,8 +1,8 @@
 sasr_sort <- function(code_sas) {
    # Nettoyage et découpage de la procédure
    code_net <- code_sas |>
-     remove_string(pattern = regex("proc\\ssort\\s", ignore_case = T)) |>
-     remove_string(pattern = regex("run\\s*;", ignore_case = T)) |>
+     remove_string(pattern = "proc\\ssort\\s", ignore.case = T) |>
+     remove_string(pattern = "run\\s*;", ignore.case = T) |>
      remove_string(pattern = ";") |>
      gsub2(pattern = "\n", replacement = " ") |>
      gsub2(pattern = "=", replacement = " ") |>

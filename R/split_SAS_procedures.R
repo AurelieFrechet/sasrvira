@@ -1,7 +1,5 @@
 #' split_SAS_procedures
 #'
-#' @import stringr
-#' @import magrittr
 #' @param code SAS to split into procedures
 #'
 #' @return character vector, procedures splitted

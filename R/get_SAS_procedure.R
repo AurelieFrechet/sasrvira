@@ -1,6 +1,4 @@
 #' get SAS procedures
-#' @import stringr
-#' @import magrittr
 #' @description read SAS code, identify procedures and extract their contents
 #' @param text SAS code
 #'

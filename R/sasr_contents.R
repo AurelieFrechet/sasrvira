@@ -1,5 +1,4 @@
 #' sasr_contents
-#' @import stringr
 #' @param code_sas
 #' @description transformation de la proc contents en code R equivalent
 #' @return code R equivalent de la proc contents avec les arguments

@@ -47,8 +47,7 @@ sasr_means <- function(code_sas){
   if (identical(means_var, character(0))) {
     nb_vars <- 0
   } else {
-    nb_vars <- match_multiple_string(x = means_var, pattern = "([A-Za-z0-9._]+)")[[1]] |>
-      length()
+    nb_vars <- count_string(x = means_var, pattern = "([A-Za-z0-9._]+)")
   }
 
   if (nb_vars == 1) {

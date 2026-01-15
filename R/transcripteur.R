@@ -43,12 +43,10 @@ traducteur <- function(code_sas) {
       }
     ) |> unlist()
 
-
-    stri_sub_all(
-      str = code_sas,
-      from = code_decoupe$place$start,
-      to = code_decoupe$place$end
-    ) <-
+# TODO: REMOVE f*cking dependencies
+    stringi::stri_sub_all(str = code_sas,
+                          from = code_decoupe$place$start,
+                          to = code_decoupe$place$end) <-
       code_decoupe$traduction
   }
 

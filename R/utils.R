@@ -3,12 +3,12 @@
 #' fonction file.path si elle est associée à une librairie SAS
 #' @param code_sas
 data_equal_to <- function(code_sas){
-  data_equal <- str_match(string = code_sas,
-            pattern = "data\\s?=\\s?([0-9a-zA-Z._]+)")[,2]
+  data_equal <- match_multiple_string(x = code_sas,
+            pattern = "data\\s?=\\s?([0-9a-zA-Z._]+)")[[1]]
 
-  if (str_detect(data_equal, "\\.")){
+  if (grepl(x = data_equal, pattern = "\\.")){
     data_equal <- data_equal |>
-      str_split(pattern = "\\.") |>
+      strsplit(split = "\\.", perl = T) |>
       unlist()
 
     data_equal <- paste0("file.path(", data_equal[1],", \"", data_equal[2], "\")")

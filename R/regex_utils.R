@@ -23,6 +23,12 @@ match_multiple_string <- function(x, pattern, nb_group = NULL, ignore.case = T, 
     })
 }
 
+count_string <- function(x, pattern, ignore.case = T, perl = T, ...){
+  match_multiple_string(x = x, pattern = pattern,  ignore.case = ignore.case, perl =  perl, ...)[[1]] |>
+    length()
+}
+
+
 locate_string <- function(x, pattern, ignore.case = T, perl = T, ...){
   m <- gregexpr(pattern, text = x, ignore.case = ignore.case, perl = perl)
   res <- regmatches(x, m)[[1]]

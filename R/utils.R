@@ -3,12 +3,12 @@
 #' fonction file.path si elle est associée à une librairie SAS
 #' @param code_sas
 data_equal_to <- function(code_sas){
-  data_equal <- str_match(string = code_sas,
-            pattern = "data\\s?=\\s?([0-9a-zA-Z._]+)")[,2]
+  data_equal <- match_multiple_string(x = code_sas,
+            pattern = "data\\s?=\\s?([0-9a-zA-Z._]+)")[[1]]
 
-  if (str_detect(data_equal, "\\.")){
-    data_equal <- data_equal %>%
-      str_split(pattern = "\\.") %>%
+  if (grepl(x = data_equal, pattern = "\\.")){
+    data_equal <- data_equal |>
+      strsplit(split = "\\.", perl = T) |>
       unlist()
 
     data_equal <- paste0("file.path(", data_equal[1],", \"", data_equal[2], "\")")
@@ -31,80 +31,71 @@ transform_pattern  <- function(chaine){
 #' qu'ils soient compatibles avec R
 #' @param chaine chaine de caractère contenant les conditions
 transform_conditions <- function(chaine){
-  chaine %>%
-    # Gestion NULL et .
-    str_replace(pattern = "([\\S]+)\\snot\\s?=\\s?\\.",
-                replacement = "!is.na(\\1)") %>%
-    str_replace(pattern = "([\\S]+)\\s?=\\s?\\.",
-                replacement = "is.na(\\1)") %>%
-    str_replace(pattern = regex("([\\S]+)\\sne\\s?\\.", ignore_case = T),
-                replacement = "!is.na(\\1)") %>%
-    str_replace(pattern = "([\\S]+)\\s?<>\\s?\\.",
-                replacement = "!is.na(\\1)") %>%
-    str_replace(pattern = regex("([\\S]+)\\sis\\snull", ignore_case = T),
-                replacement = "is.na(\\1)") %>%
-    str_replace(pattern = regex("([\\S]+)\\sis\\snot\\snull", ignore_case = T),
-                replacement = "!is.na(\\1)") %>%
+  chaine |>
+    # NULL and .
+    gsub2(pattern = "([\\S]+)\\snot\\s?=\\s?\\.", replacement = "!is.na(\\1)") |>
+    gsub2(pattern = "([\\S]+)\\s?=\\s?\\.",       replacement = "is.na(\\1)") |>
+    gsub2(pattern = "([\\S]+)\\sne\\s?\\.",       replacement = "!is.na(\\1)") |>
+    gsub2(pattern = "([\\S]+)\\s?<>\\s?\\.",      replacement = "!is.na(\\1)") |>
+    gsub2(pattern = "([\\S]+)\\sis\\snull",       replacement = "is.na(\\1)") |>
+    gsub2(pattern = "([\\S]+)\\sis\\snot\\snull", replacement = "!is.na(\\1)") |>
 
-    # Remplacement =/le/ge/<>
-    str_replace_all(pattern = "\\s?=\\s?",  replacement = " == ") %>%
-    str_replace_all(pattern = regex("\\sne\\s", ignore_case = T),   replacement = " != ") %>%
-    str_replace_all(pattern = regex("\\sge\\s", ignore_case = T),   replacement = " >= ") %>%
-    str_replace_all(pattern = regex("\\sle\\s", ignore_case = T),   replacement = " <= ") %>%
-    str_replace_all(pattern = "\\s?<>\\s?", replacement = " != ") %>%
+  # Remplacement =/le/ge/<>
+  gsub2(pattern = "\\s?=\\s?",  replacement = " == ") |>
+    gsub2(pattern = "\\sne\\s",   replacement = " != ") |>
+    gsub2(pattern = "\\sge\\s",   replacement = " >= ") |>
+    gsub2(pattern = "\\sle\\s",   replacement = " <= ") |>
+    gsub2(pattern = "\\s?<>\\s?", replacement = " != ") |>
 
-    # Remplacement NOT IN
-    str_replace(pattern = regex("([\\S]+)\\snot\\sin\\s([a-zA-Z0-9,()]+)", ignore_case = T),
-                replacement = "!(\\1 %in% c\\2)") %>%
+    # Replacement NOT IN
+    gsub2(pattern = "([\\S]+)\\snot\\sin\\s([a-zA-Z0-9,()]+)", replacement = "!(\\1 %in% c\\2)") |>
 
-    # Remplacement IN
-    str_replace(pattern = regex("([\\S]+)\\sin\\s([a-zA-Z0-9,()]+)", ignore_case = T),
-                replacement = "\\1 %in% c\\2") %>%
+    # Replacement IN
+    gsub2(pattern = "([\\S]+)\\sin\\s([a-zA-Z0-9,()]+)", replacement = "\\1 %in% c\\2") |>
 
-    # Remplacement NOT BETWEEN
-    str_replace(pattern = regex("([\\S]+)\\snot\\sbetween\\s(\\w+)\\sand\\s(\\w+)", ignore_case = T),
-                replacement = "!between(\\1, \\2, \\3)") %>%
+    # Replacement NOT BETWEEN
+    gsub2(pattern = "([\\S]+)\\snot\\sbetween\\s(\\w+)\\sand\\s(\\w+)", replacement = "!between(\\1, \\2, \\3)") |>
 
-    # Remplacement BETWEEN
-    str_replace(pattern = regex("([\\S]+)\\sbetween\\s(\\w+)\\sand\\s(\\w+)", ignore_case = T),
-                replacement = "between(\\1, \\2, \\3)") %>%
-
-    # Remplacement LIKES
-    # TODO
+    # Replacement BETWEEN
+    gsub2(pattern = "([\\S]+)\\sbetween\\s(\\w+)\\sand\\s(\\w+)", replacement = "between(\\1, \\2, \\3)") |>
 
     # Remplacement and et or
-    str_replace_all(pattern = regex("\\s?\\band\\b\\s?", ignore_case = T),  replacement = " & ") %>%
-    str_replace_all(pattern = regex("\\s?\\bor\\b\\s?", ignore_case = T),   replacement = " | ") %>%
-    str_replace_all(pattern = regex("\\s?\\bnot\\b\\s?", ignore_case = T),  replacement = " !")
+    gsub2(pattern = "\\s?\\band\\b\\s?", replacement = " & ") |>
+    gsub2(pattern = "\\s?\\bor\\b\\s?",  replacement = " | ") |>
+    gsub2(pattern = "\\s?\\bnot\\b\\s?", replacement = " !")
 }
 
 transform_casewhen <- function(chaine){
-  chaine <- chaine %>%
-    str_remove_all(pattern = regex("\\bcase\\b", ignore_case = T)) %>%
-    str_remove_all(pattern = regex("\\bend\\b", ignore_case = T)) %>%
-    str_remove_all(pattern = "\n")
+  chaine <- chaine |>
+    remove_string(pattern = "\\b(case|end)\\b", ignore.case = T, perl = T) |>
+    remove_string(pattern = "\n") |>
+    trimws()
 
   when_then <-
-    str_match_all(
-      string = chaine,
-      pattern = regex("when\\s+([\\S]+)\\s+then\\s+([\\S]+)", ignore_case = T)
-    )[[1]]
+    match_multiple_string(
+      x = chaine,
+      pattern = "when\\s+([\\S]+)\\s+then\\s+([\\S]+)",
+      nb_group = 2,
+      ignore.case = T,
+      perl = T
+    )
 
   requete <-
-    paste(when_then[, 2], when_then[, 3], sep = " ~ ") %>%
-    paste(., collapse = ",\n")
+    paste(when_then[[1]], when_then[[2]], sep = " ~ ") |>
+    paste(collapse = ",\n")
 
   else_then <-
-    str_match_all(string = chaine,
-                  pattern = regex("else\\s+([\\S]+)", ignore_case = T))[[1]]
+    match_multiple_string(x = chaine,
+                  pattern = "else\\s+([\\S]+)", nb_group = 1,
+                  ignore.case = T,
+                  perl = T
+    )
 
-  if (length(else_then) > 0) {
-    requete <- paste0(requete,
-                      ",\nTRUE ~ ",
-                        else_then[, 2])
+  if (!is.null(else_then)) {
+    requete <- paste0(requete, ",\nTRUE ~ ", else_then[1])
   }
 
-  requete <- paste0("case_when(", requete, ")") %>%
+  requete <- paste0("case_when(", requete, ")") |>
     transform_conditions()
 
   return(requete)
@@ -117,84 +108,44 @@ transform_casewhen <- function(chaine){
 #' @param chaine chaine de charactères contenant la fonction
 transform_functions <- function(chaine){
 
-  chaine <- chaine %>%
+  chaine <- chaine |>
     # Fonctions de base SQL
-    str_replace_all(pattern = regex("\\bfalse\\b", ignore_case = T),          replacement = "FALSE")%>%
-    str_replace_all(pattern = regex("\\btrue\\b", ignore_case = T),           replacement = "TRUE") %>%
-    str_replace_all(pattern = regex("\\bavg\\b", ignore_case = T),            replacement = "mean") %>%
-    str_replace_all(pattern = regex("\\bvar_samp\\b", ignore_case = T),       replacement = "var")  %>%
-    str_replace_all(pattern = regex("\\bstddev_samp\\b", ignore_case = T),    replacement = "sd")   %>%
-    str_replace_all(pattern = regex("\\bcount\\(\\*\\)", ignore_case = T), replacement = "n()")  %>%
-    str_replace_all(pattern = regex("\\bcount\\(distinct\\(([a-zA-z0-9._]+)\\)\\)", ignore_case = T),
-                    replacement = "\\bn_distinct(\\1)") %>%
+    gsub2(pattern = "\\bfalse\\b",       replacement = "FALSE") |>
+    gsub2(pattern = "\\btrue\\b",        replacement = "TRUE")  |>
+    gsub2(pattern = "\\bavg\\b",         replacement = "mean")  |>
+    gsub2(pattern = "\\bvar_samp\\b",    replacement = "var")   |>
+    gsub2(pattern = "\\bstddev_samp\\b", replacement = "sd")    |>
+    gsub2(pattern = "\\bcount\\(\\*\\)", replacement = "n()")   |>
+    gsub2(pattern = "\\bcount\\(distinct\\(([a-zA-z0-9._]+)\\)\\)",
+          replacement = "\\bn_distinct(\\1)")
 
   # Indicateurs proc means
-
-    str_replace_all(
-      pattern = regex("\\bKURT\\b",
-                      ignore_case = T),
-      replacement = "kurtosis"
-    ) %>%
-    str_replace_all(
-      pattern = regex("\\bLCLM\\b",
-                      ignore_case = T),
-      replacement = "t.test"
-    ) %>%
-    str_replace_all(
-      pattern = regex("\\bUCLM\\b",
-                      ignore_case = T),
-      replacement = "t.test"
-    ) %>%
-    str_replace_all(
-      pattern = regex("\\bSKEW\\b",
-                      ignore_case = T),
-      replacement = "skewness"
-    ) %>%
-    str_replace_all(
-      pattern = regex("\\bSTDDEV\\b",
-                      ignore_case = T),
-      replacement = "sd"
-    ) %>%
-    str_replace_all(
-      pattern = regex("\\bSTD\\b",
-                      ignore_case = T),
-      replacement = "sd"
-    ) %>%
-    str_replace_all(
-      pattern = regex("\\bN\\(([a-zA-z0-9._]+)\\)", ignore_case = T),
-      replacement = "n()"
-    ) %>%
-    str_replace_all(
-      pattern = regex("\\bMEAN\\b", ignore_case = T),
-      replacement = "mean"
-    ) %>%
-    str_replace_all(
-      pattern = regex("\\bMIN\\b", ignore_case = T),
-      replacement = "min"
-    ) %>%
-    str_replace_all(
-      pattern = regex("\\bMAX\\b", ignore_case = T),
-      replacement = "max"
-    ) %>%
-    str_replace_all(
-      pattern = regex("NMISS\\(([a-zA-z0-9._]+)\\)", ignore_case = T),
-      replacement = "sum(is.na(\\1))"
-    ) %>%
-    str_replace_all(
-      pattern = regex("\\bP([0-9]+)\\(([a-zA-z0-9._]+)\\)", ignore_case = T),
-      replacement = "quantile(\\2, \\1/100)"
-    )
+    chaine <- chaine |>
+    gsub2(pattern = "\\bKURT\\b", replacement = "kurtosis") |>
+    gsub2(pattern = "\\bLCLM\\b", replacement = "t.test") |>
+    gsub2(pattern = "\\bUCLM\\b", replacement = "t.test") |>
+    gsub2(pattern = "\\bSKEW\\b", replacement = "skewness") |>
+    gsub2(pattern = "\\bSTDDEV\\b", replacement = "sd") |>
+    gsub2(pattern = "\\bSTD\\b",    replacement = "sd") |>
+    gsub2(pattern = "\\bN\\(([a-zA-z0-9._]+)\\)", replacement = "n()") |>
+    gsub2(pattern = "\\bMEAN\\b", replacement = "mean") |>
+    gsub2(pattern = "\\bMIN\\b",  replacement = "min") |>
+    gsub2(pattern = "\\bMAX\\b",  replacement = "max") |>
+    gsub2(pattern = "NMISS\\(([a-zA-z0-9._]+)\\)",        replacement = "sum(is.na(\\1))") |>
+    gsub2(pattern = "\\bP([0-9]+)\\(([a-zA-z0-9._]+)\\)", replacement = "quantile(\\2, \\1/100)")
 
     # Case when
 
-  chaine_casewhen <- str_extract_all(string = chaine,
-                                     pattern = regex("case\\s([\\s\\S]+)\\send", ignore_case = T))[[1]]
+    chaine_casewhen <-
+      match_multiple_string(x = chaine,
+                            pattern = "case\\s([\\s\\S]+)\\send",
+                                            ignore.case = T, perl = T)
 
-  if (!identical(chaine_casewhen, character(0))) {
+  if (!is.null(chaine_casewhen)) {
     chaine <-
-      str_replace_all(
-        string = chaine,
-        pattern = regex("case\\s([\\s\\S]+)\\send", ignore_case = T),
+      gsub2(
+        x = chaine,
+        pattern = "case\\s([\\s\\S]+)\\send",
         replacement = transform_casewhen(chaine_casewhen)
       )
   }
@@ -208,11 +159,11 @@ transform_functions <- function(chaine){
 #' @param chaine liste SAS au format {l1 l2 l3}
 
 transform_list <- function(chaine){
-  valeurs <- chaine %>%
-    str_remove(pattern = "\\{") %>%
-    str_remove(pattern = "\\}") %>%
-    str_trim() %>%
-    str_split(pattern = "\\s+") %>%
+  valeurs <- chaine |>
+    remove_string(pattern = "\\{") |>
+    remove_string(pattern = "\\}") |>
+    trimws() |>
+    strsplit(split = "\\s+") |>
     unlist()
 
   valeurs_numeric <- suppressWarnings(as.numeric(valeurs))

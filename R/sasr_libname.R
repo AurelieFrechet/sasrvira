@@ -8,16 +8,16 @@
 #'
 #' @examples
 sasr_libname <- function(code_sas) {
-  lib_match <- code_sas %>%
+  lib_match <- code_sas |>
     # Transformation des \ en /
-    transform_path() %>%
+    transform_path() |>
     # Identification du nom de la librarie et du chemin assosié
-    str_match(pattern = "libname (\\w+) ([\"'][\\S]+[\"'])")
+    match_multiple_string(pattern = "libname (\\w+) ([\"'][\\S]+[\"'])")
 
   # Gestion des options ?
 
-  nom    <- lib_match[, 2]
-  chemin <- lib_match[, 3]
+  nom    <- lib_match[[1]]
+  chemin <- lib_match[[2]]
 
   return(paste(nom, "<-", chemin))
 

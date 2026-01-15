@@ -1,6 +1,4 @@
 #' get SAS procedures
-#' @import stringr
-#' @import magrittr
 #' @description read SAS code, identify procedures and extract their contents
 #' @param text SAS code
 #'
@@ -12,19 +10,19 @@
 #' get_SAS_procedure(text = "PROC CONTENTS DATA=sample;RUN;")
 get_SAS_procedure <- function(text) {
   # Detect procedures
-  matching <- str_match(string  = text,
-            pattern = "proc (\\w+)\\s?;?\\s*(.*?)\\s*(run|quit);")
+  matching <- match_multiple_string(x = text,
+               pattern = "proc (\\w+)\\s?;?\\s*(.*?)\\s*(run|quit);")
 
-  proc <- matching[, 2]
-  contenu <- matching[, 3] %>%
-    strsplit(";") %>%
-    unlist() %>%
-    str_trim()
-
-  if (is.na(proc)) {
+  if (is.null(matching)) {
     message("text not identified")
     return(NULL)
   }
+
+  proc <- matching[[1]]
+  contenu <- matching[[2]] |>
+    strsplit(";") |>
+    unlist() |>
+    trimws()
 
   return(list(proc = proc,
               contenu = contenu))

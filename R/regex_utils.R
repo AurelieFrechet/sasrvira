@@ -1,5 +1,5 @@
-remove_string <- function(x, pattern, ...){
-  gsub(pattern = pattern, replacement = "", x = x, ...)
+remove_string <- function(x, pattern,  ignore.case = F, perl = T, ...){
+  gsub(pattern = pattern, replacement = "", x = x, ignore.case = ignore.case, perl =  perl,...)
 }
 
 gsub2 <- function(x, pattern,  replacement,  ignore.case = T, perl = T, ...){

@@ -69,7 +69,7 @@ sql_dplyr_select <- function(select_clause) {
   code <- select_clause %>%
     str_split(pattern = ",") %>%
     unlist() %>%
-    str_trim %>%
+    trimws %>%
     transform_functions()
 
   attribution <- code %>%
@@ -299,7 +299,7 @@ sql_to_dplyr <- function(code_sql) {
   # WHERE ----
   if (any(sentence$key_word == "where")) {
     # If non-empty WHERE (because of JOIN cleaning)
-    if (str_trim(sentence$text[(sentence$key_word == "where")]) != "") {
+    if (trimws(sentence$text[(sentence$key_word == "where")]) != "") {
       dplyr_filter <- sentence$text[(sentence$key_word == "where")] %>%
         transform_conditions() %>%
         paste0("filter(", ., ")")
@@ -313,13 +313,13 @@ sql_to_dplyr <- function(code_sql) {
     var_groupby <- sentence$text[(sentence$key_word == "group by")] %>%
       str_split(pattern = ',') %>%
       unlist() %>%
-      str_trim()
+      trimws()
 
 
     var_select <- sentence$text[(sentence$key_word == "select")] %>%
       str_split(pattern = ',') %>%
       unlist() %>%
-      str_trim()
+      trimws()
 
 
     sentence$text[(sentence$key_word == "select")] <-
@@ -352,7 +352,7 @@ sql_to_dplyr <- function(code_sql) {
   # ORDER BY ----
   if (any(sentence$key_word == "order by")) {
     dplyr_arrange <- sentence$text[(sentence$key_word == "order by")] %>%
-      str_replace_all(pattern = regex("([\\S]+)\\sdesc", ignore_case = T),
+      gsub2(pattern = regex("([\\S]+)\\sdesc", ignore_case = T),
                       replacement = "-\\1") %>%
       paste0("arrange(", . , ")")
   }
@@ -395,8 +395,8 @@ sasr_sql <- function(code_sas) {
     str_remove(pattern = regex("quit\\s*;", ignore_case = T)) %>%
     str_split(pattern = ";") %>%
     unlist() %>%
-    str_replace_all(pattern = "\n", " ") %>%
-    str_trim() %>%
+    gsub2(pattern = "\n", " ") %>%
+    trimws() %>%
     {
       .[-which(. == "")]
     }

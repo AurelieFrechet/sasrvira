@@ -1,7 +1,6 @@
 #' data_equal_to
 #' @description detecte la valeur da data et la renvoie, contenur dans une
 #' fonction file.path si elle est associée à une librairie SAS
-#' @param code_sas
 data_equal_to <- function(code_sas){
   data_equal <- match_multiple_string(x = code_sas,
             pattern = "data\\s?=\\s?([0-9a-zA-Z._]+)")[[1]]
@@ -156,8 +155,7 @@ transform_functions <- function(chaine){
 
 #' Transform listes
 #' @description remplace une liste SAS par son équivalent vectoriel R
-#' @param chaine liste SAS au format {l1 l2 l3}
-
+#' @param chaine liste SAS au format "\{l1 l2 l3\}"
 transform_list <- function(chaine){
   valeurs <- chaine |>
     remove_string(pattern = "\\{") |>

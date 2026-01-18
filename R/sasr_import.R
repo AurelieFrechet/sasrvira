@@ -7,7 +7,7 @@ sasr_import <- function(code_sas) {
     gsub2(pattern = "=", replacement = " ") |>
     gsub2(pattern = "\\s+", replacement = " ") |>
     decoupe_requete(
-      requete = .,
+      requete = _,
       keywords = c("datafile",
                     "table",
                     "out",

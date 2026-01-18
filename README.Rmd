@@ -26,7 +26,7 @@ You can install the development version of sasrvira from [GitHub](https://github
 
 ``` r
 # install.packages("pak")
-pak::pak("AurelieFrechet/saservira")
+pak::pak("AurelieFrechet/sasrvira")
 ```
 
 ## Example

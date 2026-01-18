@@ -6,8 +6,6 @@
 #' -proc : name of the procedure in listed values in procs
 #' -contenu : what's inside the procedure
 #'
-#' @examples
-#' get_SAS_procedure(text = "PROC CONTENTS DATA=sample;RUN;")
 get_SAS_procedure <- function(text) {
   # Detect procedures
   matching <- match_multiple_string(x = text,

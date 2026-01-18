@@ -20,6 +20,7 @@ reecriture <- function(id, code) {
 #'
 #' @param input fichier SAS
 #' @param output fichier R
+#' @importFrom stringi stri_sub_all
 #'
 #' @export
 #'

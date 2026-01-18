@@ -13,7 +13,6 @@
 #' identifiant la procédure ou le commentaire, etc.
 #' @export
 #'
-#' @examples
 decouper_SAS <- function(code_sas) {
 
   # PROCEDURES : proc mot [...] run;/quit;
@@ -53,7 +52,6 @@ decouper_SAS <- function(code_sas) {
 #' @return vecteur nommé des blocs, le nom associé correspond aux mots clés
 #' @export
 #'
-#' @examples
 decoupe_requete <- function(requete, keywords){
   # Clean spaces and newlines
   requete <-  clean_newlines(requete)

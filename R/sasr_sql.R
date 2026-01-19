@@ -164,7 +164,6 @@ sql_dplyr_select <- function(select_clause) {
 #' @return chaine de charactere
 #' @export
 #'
-#' @examples
 sql_to_dplyr <- function(code_sql) {
   # Déclaration des variables
   nom <- colonne <- NULL
@@ -367,7 +366,6 @@ sql_to_dplyr <- function(code_sql) {
 #' @return la même requeteen R library dplyr
 #' @export
 #'
-#' @examples
 sasr_sql <- function(code_sas) {
   # Séparer les différentes requêtes ----
   requetes <- code_sas |>

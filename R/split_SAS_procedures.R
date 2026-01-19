@@ -1,6 +1,6 @@
 #' split_SAS_procedures
 #'
-#' @param code SAS to split into procedures
+#' @param text character: code sas
 #'
 #' @return character vector, procedures splitted
 split_SAS_procedures <- function(text) {

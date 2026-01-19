@@ -7,7 +7,7 @@
 split_SAS_procedures(text)
 }
 \arguments{
-\item{code}{SAS to split into procedures}
+\item{text}{character: code sas}
 }
 \value{
 character vector, procedures splitted

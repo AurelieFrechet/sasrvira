@@ -17,6 +17,3 @@ list of identified procedures as
 \description{
 read SAS code, identify procedures and extract their contents
 }
-\examples{
-get_SAS_procedure(text = "PROC CONTENTS DATA=sample;RUN;")
-}

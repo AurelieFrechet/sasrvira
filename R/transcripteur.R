@@ -18,8 +18,8 @@ reecriture <- function(id, code) {
 #' @include decoupe.R
 #' @description traduit du code SAS en R
 #'
-#' @param input fichier SAS
-#' @param output fichier R
+#' @param code_sas fichier SAS
+#' @importFrom stringi stri_sub_all
 #'
 #' @export
 #'

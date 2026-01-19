@@ -1,5 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^packrat/
 ^\.Rprofile$
 ^LICENSE\.md$
+^\.github$
+^README\.Rmd$

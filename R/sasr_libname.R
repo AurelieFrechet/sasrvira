@@ -6,7 +6,6 @@
 #' @return expression R associée
 #' @export
 #'
-#' @examples
 sasr_libname <- function(code_sas) {
   lib_match <- code_sas |>
     # Transformation des \ en /

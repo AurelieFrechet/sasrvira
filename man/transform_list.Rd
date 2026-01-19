@@ -7,7 +7,7 @@
 transform_list(chaine)
 }
 \arguments{
-\item{chaine}{liste SAS au format {l1 l2 l3}}
+\item{chaine}{liste SAS au format "\{l1 l2 l3\}"}
 }
 \description{
 remplace une liste SAS par son équivalent vectoriel R

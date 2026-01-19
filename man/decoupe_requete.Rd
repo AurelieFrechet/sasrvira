@@ -9,7 +9,7 @@ decoupe_requete(requete, keywords)
 \arguments{
 \item{requete}{une seule requete sql}
 
-\item{key_words}{: mots clés de découpe (select, from, etc)}
+\item{keywords}{: mots clés de découpe (select, from, etc)}
 }
 \value{
 vecteur nommé des blocs, le nom associé correspond aux mots clés

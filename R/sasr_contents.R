@@ -1,4 +1,7 @@
 #' sasr_contents
+#'
+#' @param code_sas character: code sas
+#'
 #' @description transformation de la proc contents en code R equivalent
 #' @return code R equivalent de la proc contents avec les arguments
 #' @export

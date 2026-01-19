@@ -6,6 +6,9 @@
 \usage{
 data_equal_to(code_sas)
 }
+\arguments{
+\item{code_sas}{character: code sas}
+}
 \description{
 detecte la valeur da data et la renvoie, contenur dans une
 fonction file.path si elle est associée à une librairie SAS

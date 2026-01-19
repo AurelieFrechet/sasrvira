@@ -47,7 +47,7 @@ decouper_SAS <- function(code_sas) {
 #' @description lit une requete sql et renvoie une data.frame avec les mots clés (kw)
 #' et les valeurs associées (sentence)
 #' @param requete une seule requete sql
-#' @param key_words : mots clés de découpe (select, from, etc)
+#' @param keywords : mots clés de découpe (select, from, etc)
 #'
 #' @return vecteur nommé des blocs, le nom associé correspond aux mots clés
 #' @export

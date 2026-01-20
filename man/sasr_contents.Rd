@@ -6,6 +6,9 @@
 \usage{
 sasr_contents(code_sas)
 }
+\arguments{
+\item{code_sas}{character: code sas}
+}
 \value{
 code R equivalent de la proc contents avec les arguments
 }

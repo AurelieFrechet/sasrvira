@@ -7,9 +7,7 @@
 traducteur(code_sas)
 }
 \arguments{
-\item{input}{fichier SAS}
-
-\item{output}{fichier R}
+\item{code_sas}{fichier SAS}
 }
 \description{
 traduit du code SAS en R

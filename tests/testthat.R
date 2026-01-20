@@ -1,4 +1,4 @@
 library(testthat)
-library(saservira)
+library(sasrvira)
 
-test_check("saservira")
+test_check("sasrvira")

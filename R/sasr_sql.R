@@ -4,14 +4,14 @@
 # Utils SQL ---------------------------------------------------------------
 
 get_alias <- function(segment_table){
-  if (str_detect(segment_table, pattern = "\\bas\\b")) {
-    alias_table <- str_match_all(segment_table,
-                                  pattern = "[\\S]+\\sas\\s([\\S]+)")[[1]][, 2]
+  if (grepl(x = segment_table, pattern = "\\bas\\b")) {
+    alias_table <- match_multiple_string(segment_table,
+                                  pattern = "[\\S]+\\sas\\s([\\S]+)")[[1]]
 
   } else {
-    if (str_count(segment_table, "\\w+") == 2) {
-      alias_table <- str_match_all(segment_table,
-                                    pattern = "[\\S]+\\s([\\S]+)")[[1]][, 2]
+    if (count_string(x = segment_table, pattern = "\\w+") == 2) {
+      alias_table <- match_multiple_string(segment_table,
+                                    pattern = "[\\S]+\\s([\\S]+)")[[1]]
 
     } else {
       alias_table <- segment_table
@@ -21,14 +21,14 @@ get_alias <- function(segment_table){
 }
 
 get_table <- function(segment_table){
-  if (str_detect(segment_table, pattern = "\\bas\\b")) {
-    nom_table <- str_match_all(segment_table,
-                                 pattern = "([\\S]+)\\sas\\s[\\S]+")[[1]][, 2]
+  if (grepl(x = segment_table, pattern = "\\bas\\b")) {
+    nom_table <- match_multiple_string(segment_table,
+                                 pattern = "([\\S]+)\\sas\\s[\\S]+")[[1]]
 
   } else {
-    if (str_count(segment_table, "[\\S]+") == 2) {
-      nom_table <- str_match_all(segment_table,
-                                   pattern = "([\\S]+)\\s[\\S]+")[[1]][, 2]
+    if (count_string(x = segment_table, pattern = "[\\S]+") == 2) {
+      nom_table <- match_multiple_string(segment_table,
+                                   pattern = "([\\S]+)\\s[\\S]+")[[1]]
 
     } else {
       nom_table <- segment_table
@@ -40,10 +40,10 @@ get_table <- function(segment_table){
 
 read_join <- function(from_table, join_table, join_expression){
 
-  cles_sql <- join_expression %>%
-    str_split(pattern = "\\s*=\\s*") %>%
-    unlist() %>%
-    str_split(pattern = "\\.")
+  cles_sql <- join_expression |>
+    strsplit(split = "\\s*=\\s*", perl = T) |>
+    unlist() |>
+    strsplit(split = "\\.", perl = T)
 
   id_join        <- sapply(cles_sql, function(i) i[2])
   names(id_join) <- sapply(cles_sql, function(i) i[1])
@@ -58,24 +58,22 @@ read_join <- function(from_table, join_table, join_expression){
 sql_dplyr_select <- function(select_clause) {
   # Détection du ALL
   is_all       <- select_clause == "*"
-  contains_all <-
-    str_detect(string = select_clause, pattern = "\\*")
+  contains_all <- grepl(x = select_clause, pattern = "\\*")
 
   # Détection du DISTINCT
-  is_distinct  <- str_detect(string = select_clause,
-                             pattern = regex("distinct", ignore_case = T))
+  is_distinct  <- grepl(x = select_clause, pattern = "distinct", ignore.case = T)
 
   # Découpage de la clause par la virgule
-  code <- select_clause %>%
-    str_split(pattern = ",") %>%
-    unlist() %>%
-    str_trim %>%
+  code <- select_clause |>
+    strsplit(split = ",", perl = T) |>
+    unlist() |>
+    trimws() |>
     transform_functions()
 
-  attribution <- code %>%
-    str_split(pattern = "\\sinto\\s?:\\s?|\\sas\\s|\\s")
+  attribution <- code |>
+    strsplit(split = "\\sinto\\s?:\\s?|\\sas\\s|\\s", perl = T)
 
-  attribution <- do.call(rbind, attribution) %>%
+  attribution <- do.call(rbind, attribution) |>
     as.data.frame(stringsAsFactors = FALSE)
 
   if(ncol(attribution) == 2){
@@ -98,23 +96,18 @@ sql_dplyr_select <- function(select_clause) {
   # - MAX()
   # - MIN()
   # - SUM()
-  is_function <- str_detect(string = code, pattern = "\\(")
+  is_function <- grepl(x = code, pattern = "\\(")
 
 
   # Préparation du select général
-  select_code <- noms_var %>%
-    # paste0("\"", ., "\"") %>%
-    paste(., collapse = ", ") %>%
-    paste0("select(", ., ")")
+  select_code <- paste0("select(", paste(noms_var, collapse = ", "), ")")
+
 
   # Affectation des noms de variables à leur contenu
-  affectation <-
-    ifelse(is.na(contenu), NA,
-           paste(noms_var, contenu, sep = " = ")) %>%
-    {
-      .[!is.na(.)]
-    } %>%
-    paste(., collapse = ", ")
+
+  a1 <- ifelse(is.na(contenu), NA, paste(noms_var, contenu, sep = " = "))
+  a2 <- a1[!is.na(a1)]
+  affectation <-  paste(a2, collapse = ", ")
 
 
   ## SI ALL
@@ -123,30 +116,24 @@ sql_dplyr_select <- function(select_clause) {
   } else {
     ## SI DISTINCT
     if (is_distinct) {
-      return_code <- select_code %>%
-        paste0(., " %>% \n\tdistinct()")
+      return_code <- paste0(select_code, " %>% \n\tdistinct()")
     } else {
       ## SI ne contient que des fonctions d'aggregation
       if (all(is_function)) {
         if(any(is_create)){
-          return_code <- affectation %>%
-            paste0("summarize(", ., ")")
+          return_code <- paste0("summarize(", affectation, ")")
         } else {
-          return_code <- noms_var %>%
-            paste(., collapse = ", ") %>%
-            paste0("summarize(", ., ")")
+          return_code <-  paste0("summarize(", paste(noms_var, collapse = ", "), ")")
         }
 
       } else {
         ## SI ne contient que des créations de variables
         if (all(is_create)) {
-          return_code <- affectation %>%
-            paste0("transmute(", ., ")")
+          return_code <- paste0("transmute(", affectation, ")")
         } else {
           # Si contient ALL
           if (contains_all & any(is_create)) {
-            return_code <- affectation %>%
-              paste0("mutate(", ., ")")
+            return_code <- paste0("mutate(", affectation, ")")
           } else {
             # SI Extraction pure
             if (all(is.na(contenu))) {
@@ -155,8 +142,7 @@ sql_dplyr_select <- function(select_clause) {
 
             } else{
               # Creation de variable
-              return_code <- affectation %>%
-                paste0("mutate(", ., ") %>%\n\t", select_code)
+              return_code <- paste0("mutate(", affectation, ") %>%\n\t", select_code)
             }
 
           }
@@ -173,14 +159,11 @@ sql_dplyr_select <- function(select_clause) {
 
 #' sql_to_dplyr
 #' @include decoupe.R
-#' @import dplyr
-#' @import stringr
 #' @param code_sql : chaine de charactère code SQL
 #'
 #' @return chaine de charactere
 #' @export
 #'
-#' @examples
 sql_to_dplyr <- function(code_sql) {
   # Déclaration des variables
   nom <- colonne <- NULL
@@ -195,9 +178,10 @@ sql_to_dplyr <- function(code_sql) {
   dplyr_join    <- NA
   affectation   <- NA
 
+  code_sql <- remove_string(code_sql, ";")
   # Initialisation
   sentence <- decoupe_requete(code_sql,
-                              key_words = c("select",
+                              keywords = c("select",
                                             "from",
                                             "where",
                                             "order by",
@@ -211,14 +195,12 @@ sql_to_dplyr <- function(code_sql) {
 
 
 
-
-
   #  FROM ----
   # TODO : Détecter les abréviations FROM table_machin t1
   # TODO : gestion plusieurs tables
-  if (any(sentence$kw == "from")) {
-    from_vector <- sentence$text[(sentence$kw == "from")] %>%
-      str_split(pattern = ",") %>%
+  if (any(sentence$key_word == "from")) {
+    from_vector <- sentence$text[(sentence$key_word == "from")] |>
+      strsplit(split = ",", perl = T) |>
       unlist()
 
     if (length(from_vector) > 1) {
@@ -230,15 +212,15 @@ sql_to_dplyr <- function(code_sql) {
   }
 
   # CREATE TABLE ----
-  if (any(sentence$kw == "create table")) {
-    lecture <- sentence$text[(sentence$kw == "create table")] %>%
-      str_match(pattern = regex("([\\S]+)\\s(as|like)?(\\s[\\S]+)?", ignore_case = T))
+  if (any(sentence$key_word == "create table")) {
+    lecture <- sentence$text[(sentence$key_word == "create table")] |>
+      match_multiple_string(pattern = "([\\S]+)\\s(as|like)?(\\s[\\S]+)?", ignore.case = T)
 
-    nom_table <-  lecture[, 2]
-    table_like <- lecture[, 4]
+    nom_table <-  lecture[[1]]
+    table_like <- ifelse(lecture[[3]] == "", NA, lecture[[3]])
 
     # CAS CREATE TABLE ______ LIKE
-    if(str_detect(lecture[, 1], pattern = "\\blike\\b") & !is.na(table_like)){
+    if(!is.na(table_like)){
       dplyr_data <- paste(nom_table, table_like, sep = " <- ")
     }
     else {
@@ -249,28 +231,28 @@ sql_to_dplyr <- function(code_sql) {
   }
 
   # JOIN ----
-  if (any(str_detect(sentence$kw, "join"))) {
-    join_expression <- sentence$text[str_detect(sentence$kw, "join")]
-    nom_jointures   <- sentence$kw[str_detect(sentence$kw, "join")]%>%
-      tolower() %>%
-      str_replace(pattern = "\\s+", "_")
+  if (any(grepl(x = sentence$key_word, pattern = "join"))) {
+    join_expression <- sentence$text[grepl(x = sentence$key_word, pattern = "join")]
+    nom_jointures   <- sentence$key_word[grepl(x = sentence$key_word, pattern = "join")]|>
+      tolower() |>
+      gsub2(pattern = "\\s+", "_")
 
     # If there is no ON => WHERE
-    if (any(str_detect(join_expression, pattern = regex("\\bon\\b", ignore_case = T)))) {
-      jointures <- join_expression %>%
-        str_split(pattern = regex("\\s+on\\s+", ignore_case = T))
+    if (any(grepl(x = join_expression, pattern = "\\bon\\b", ignore.case = T))) {
+      jointures <- join_expression |>
+        strsplit(split = "(?i)\\s+on\\s+", perl = T)
 
       tables_jointures      <- sapply(jointures, function(i) i[1])
       conditions_jointures  <- sapply(jointures, function(i) i[2])
     } else {
-      tables_jointures      <- join_expression %>% unlist()
-      conditions_jointures  <- str_extract_all(
-        sentence$text[str_detect(sentence$kw, "where")],
-        pattern = "\\w+\\.\\w+\\s*=\\s*\\w+\\.\\w++"
-      ) %>%
+      tables_jointures      <- join_expression |> unlist()
+      conditions_jointures  <- match_multiple_string(
+        sentence$text[grepl(x = sentence$key_word, pattern = "where")],
+        pattern = "(\\w+\\.\\w+\\s*=\\s*\\w+\\.\\w++)"
+      ) |>
         unlist()
-      sentence$text[str_detect(sentence$kw, "where")] <- str_remove_all(
-        sentence$text[str_detect(sentence$kw, "where")],
+      sentence$text[grepl(x = sentence$key_word, pattern = "where")] <- remove_string(
+        sentence$text[grepl(x = sentence$key_word, pattern = "where")],
         pattern = "\\w+\\.\\w+\\s*=\\s*\\w+\\.\\w++"
       )
     }
@@ -278,84 +260,83 @@ sql_to_dplyr <- function(code_sql) {
 
     dplyr_join <-  sapply(1:length(tables_jointures), function(i) {
       alias_jointures       <- get_alias(tables_jointures[i])
-      read_join(alias_from,
-                alias_jointures,
-                conditions_jointures[i]) %>%
-        paste(., collapse = ", ") %>%
-        paste0(nom_jointures[i],
-               "(",
-               tables_jointures[i],
-               ", ",
-               "by = c(",
-               .,
-               "))")
-    }) %>%
-      paste(., collapse = " %>%\n\t")
+      joingned_expression <- read_join(
+        from_table = alias_from,
+        join_table = alias_jointures,
+        join_expression = conditions_jointures[i]
+      )
 
+      paste0(
+          nom_jointures[i],
+          "(",
+          tables_jointures[i],
+          ", ",
+          "by = c(",
+          paste(joingned_expression, collapse = ", "),
+          "))"
+        )
+    })
 
+    dplyr_join <-  paste(dplyr_join, collapse = " %>%\n\t")
 
   }
 
 
   # WHERE ----
-  if (any(sentence$kw == "where")) {
+  if (any(sentence$key_word == "where")) {
     # If non-empty WHERE (because of JOIN cleaning)
-    if (str_trim(sentence$text[(sentence$kw == "where")]) != "") {
-      dplyr_filter <- sentence$text[(sentence$kw == "where")] %>%
-        transform_conditions() %>%
-        paste0("filter(", ., ")")
+    if (trimws(sentence$text[(sentence$key_word == "where")]) != "") {
+      dplyr_filter <- sentence$text[(sentence$key_word == "where")] |>
+        transform_conditions()
+      dplyr_filter <- paste0("filter(", dplyr_filter, ")")
     }
   }
 
 
   # GROUP BY ----
-  if (any(sentence$kw == "group by")) {
+  if (any(sentence$key_word == "group by")) {
     # Soustraction des var du group by au select
-    var_groupby <- sentence$text[(sentence$kw == "group by")] %>%
-      str_split(pattern = ',') %>%
-      unlist() %>%
-      str_trim()
+    var_groupby <- sentence$text[(sentence$key_word == "group by")] |>
+      strsplit(split = ',', perl = T) |>
+      unlist() |>
+      trimws()
 
 
-    var_select <- sentence$text[(sentence$kw == "select")] %>%
-      str_split(pattern = ',') %>%
-      unlist() %>%
-      str_trim()
+    var_select <- sentence$text[(sentence$key_word == "select")] |>
+      strsplit(split = ',', perl = T) |>
+      unlist() |>
+      trimws()
 
 
-    sentence$text[(sentence$kw == "select")] <-
-      setdiff(var_select, var_groupby) %>%
-      paste(., collapse = ", ")
+    sentence$text[(sentence$key_word == "select")] <- paste(setdiff(var_select, var_groupby) , collapse = ", ")
 
 
-    dplyr_groupby <- var_groupby %>%
-      paste0("group_by(", . , ")")
+    dplyr_groupby <- paste0("group_by(", var_groupby , ")")
   }
 
 
   # HAVING ----
-  if (any(sentence$kw == "having")) {
-    dplyr_filter <- sentence$text[(sentence$kw == "having")] %>%
-      transform_conditions() %>%
-      paste0("filter(", ., ")")
+  if (any(sentence$key_word == "having")) {
+    dplyr_filter <- sentence$text[(sentence$key_word == "having")] |>
+      transform_conditions()
+    dplyr_filter <- paste0("filter(", dplyr_filter, ")")
   }
 
   # SELECT ----
-  if (sentence$text[(sentence$kw == "select")] != "*"
-      & any(sentence$kw == "select")) {
+  if (sentence$text[(sentence$key_word == "select")] != "*"
+      & any(sentence$key_word == "select")) {
     # Détecter les prefixes et les supprimer
     # Note : choix de tout supprimer peut-être à revoire plus tard
-    dplyr_select <- sentence$text[(sentence$kw == "select")] %>%
-      str_remove_all(pattern = "\\w+\\.") %>%
+    dplyr_select <- sentence$text[(sentence$key_word == "select")] |>
+      remove_string(pattern = "\\w+\\.") |>
       sql_dplyr_select()
   }
 
   # ORDER BY ----
-  if (any(sentence$kw == "order by")) {
-    dplyr_arrange <- sentence$text[(sentence$kw == "order by")] %>%
-      str_replace_all(pattern = regex("([\\S]+)\\sdesc", ignore_case = T),
-                      replacement = "-\\1") %>%
-      paste0("arrange(", . , ")")
+  if (any(sentence$key_word == "order by")) {
+    dplyr_arrange <- sentence$text[(sentence$key_word == "order by")] |>
+      gsub2(pattern = "([\\S]+)\\sdesc", replacement = "-\\1", ignore.case = T)
+    dplyr_arrange <- paste0("arrange(", dplyr_arrange , ")")
   }
 
 
@@ -371,11 +352,8 @@ sql_to_dplyr <- function(code_sql) {
                      dplyr_mutate,
                      dplyr_select,
                      dplyr_filter,
-                     dplyr_arrange) %>%
-    {
-      .[!is.na(.)]
-    } %>%
-    paste(., collapse = " %>%\n\t")
+                     dplyr_arrange)
+  requete_dplyr <- paste(requete_dplyr[!is.na(requete_dplyr)], collapse = " %>%\n\t")
 
   return(requete_dplyr)
 
@@ -388,24 +366,23 @@ sql_to_dplyr <- function(code_sql) {
 #' @return la même requeteen R library dplyr
 #' @export
 #'
-#' @examples
 sasr_sql <- function(code_sas) {
   # Séparer les différentes requêtes ----
-  requetes <- code_sas %>%
-    str_remove(pattern = regex("proc\\s+sql\\s*;", ignore_case = T)) %>%
-    str_remove(pattern = regex("quit\\s*;", ignore_case = T)) %>%
-    str_split(pattern = ";") %>%
-    unlist() %>%
-    str_replace_all(pattern = "\n", " ") %>%
-    str_trim() %>%
-    {
-      .[-which(. == "")]
-    }
+  requetes <- code_sas |>
+    remove_string(pattern = "proc\\s+sql\\s*;", ignore.case = T) |>
+    remove_string(pattern = "quit\\s*;", ignore.case = T) |>
+    strsplit(split = ";", perl = T) |>
+    unlist() |>
+    gsub2(pattern = "\n", " ") |>
+    trimws()
+
+  requetes <- requetes[-which(requetes == "")]
+
 
   # Mise en fonction dplyr pour chaque requete
-  requetes_dplyr <- lapply(requetes, sql_to_dplyr) %>%
-    unlist() %>%
-    paste(., collapse = "\n")
+  requetes_dplyr <- lapply(requetes, sql_to_dplyr) |>
+    unlist()
+  requetes_dplyr <- paste(requetes_dplyr, collapse = "\n")
 
   return(requetes_dplyr)
 

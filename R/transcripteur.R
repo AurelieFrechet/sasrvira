@@ -8,7 +8,7 @@ reecriture <- function(id, code) {
       sasr_contents(code)
     },
     "proc means" = {
-      sasr_means(code)
+      transpile(proc_means(code))
     }
   )
 }

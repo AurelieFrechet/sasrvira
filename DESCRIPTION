@@ -14,6 +14,7 @@ RoxygenNote: 7.3.3
 Depends:
   stringi
 Collate: 
+    'class_ProcMeans.R'
     'decoupe.R'
     'expressions.R'
     'get_SAS_procedure.R'
@@ -24,7 +25,6 @@ Collate:
     'sasr_freq.R'
     'sasr_import.R'
     'sasr_libname.R'
-    'sasr_means.R'
     'sasr_sort.R'
     'utils.R'
     'sasr_sql.R'

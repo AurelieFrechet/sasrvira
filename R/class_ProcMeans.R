@@ -1,9 +1,3 @@
-splitws <- function(text){
-  text |>
-  strsplit(split = " ") |>
-    unlist() |>
-    trimws()
-}
 
 # Define class ------------------------------------------------------------
 
@@ -28,8 +22,14 @@ ProcMeans <- S7::new_class(
 )
 
 
-# Cosntructor -------------------------------------------------------------
+# Constructor -------------------------------------------------------------
 
+#' proc_means
+#'
+#' @param code_sas
+#'
+#' @returns code R
+#' @export
 proc_means <- function(code_sas) {
   code_net <- code_sas |>
     remove_string(pattern  = "proc\\s*means\\s", ignore.case = T) |>
@@ -103,6 +103,7 @@ proc_means <- function(code_sas) {
 # Method: transpile to_dplyr -------------------------------------------------------
 
 transpile <- S7::new_generic("transpile", "x")
+
 
 S7::method(transpile, ProcMeans) <- function(x) {
 

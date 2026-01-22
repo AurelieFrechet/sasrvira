@@ -12,8 +12,15 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.3
 Depends:
-  stringi
+  stringi,
+  S7
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat (>= 2.1.0)
+VignetteBuilder: knitr
 Collate: 
+    'class_ProcContents.R'
     'class_ProcMeans.R'
     'decoupe.R'
     'expressions.R'
@@ -30,10 +37,4 @@ Collate:
     'sasr_sql.R'
     'split_SAS_procedures.R'
     'transcripteur.R'
-Suggests: 
-    knitr,
-    rmarkdown,
-    testthat (>= 2.1.0)
-VignetteBuilder: knitr
-Imports: 
-    S7
+

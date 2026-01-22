@@ -22,6 +22,7 @@ VignetteBuilder: knitr
 Collate: 
     'class_ProcContents.R'
     'class_ProcMeans.R'
+    'class_ProcPrint.R'
     'decoupe.R'
     'expressions.R'
     'get_SAS_procedure.R'
@@ -37,4 +38,3 @@ Collate:
     'sasr_sql.R'
     'split_SAS_procedures.R'
     'transcripteur.R'
-

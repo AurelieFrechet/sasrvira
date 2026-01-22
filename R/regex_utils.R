@@ -48,3 +48,10 @@ paste_function <- function(function_name, content){
 clean_newlines <- function(text, ...){
   gsub2(x = text, pattern = "\\s|\\r\\n\\t", " ", ...)
 }
+
+splitws <- function(text){
+  text |>
+    strsplit(split = " ") |>
+    unlist() |>
+    trimws()
+}

@@ -55,12 +55,14 @@ decouper_SAS <- function(code_sas) {
 decoupe_requete <- function(requete, keywords){
   # Clean spaces and newlines
   requete <-  clean_newlines(requete)
+  look_ahead <- paste0("(?<=.)(?=(\\b", keywords, "\\b))")
+  look_behind <- paste0("(?=.)(?<=(\\b", keywords, "\\b))")
 
-pattern_kw <- paste0('(?i)',                         # insensible à la casse
-                     '"[^"\']*"(*SKIP)(*F)|',          # ignorer guillemets doubles
-                     "'[^']*'(*SKIP)(*F)|",          # ignorer guillemets simples
-                     '(?<=.)(?=(', paste(paste0("\\b", keywords, "\\b"), collapse="|"), '))',
-                     '|(?=.)(?<=(', paste(paste0("\\b", keywords, "\\b"), collapse="|"), '))')
+  pattern_kw <- paste0('(?i)',                         # insensible à la casse
+                       '"[^"\']*"(*SKIP)(*F)|',          # ignorer guillemets doubles
+                       "'[^']*'(*SKIP)(*F)|",          # ignorer guillemets simples
+                       paste(look_ahead, collapse = "|"), '|',
+                       paste(look_behind, collapse = "|"))
 
 if(!grepl(pattern = pattern_kw, x = requete, ignore.case = T, perl = T)){
   message("Requete does not contain key words")

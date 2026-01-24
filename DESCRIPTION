@@ -20,10 +20,10 @@ Suggests:
     testthat (>= 2.1.0)
 VignetteBuilder: knitr
 Collate: 
+    'class_ProcSAS.R'
     'class_ProcContents.R'
     'class_ProcMeans.R'
     'class_ProcPrint.R'
-    'class_ProcSAS.R'
     'decoupe.R'
     'expressions.R'
     'get_SAS_procedure.R'

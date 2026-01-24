@@ -2,7 +2,6 @@
 
 export(decoupe_requete)
 export(decouper_SAS)
-export(proc_means)
 export(sasr_contents)
 export(sasr_libname)
 export(sasr_sql)

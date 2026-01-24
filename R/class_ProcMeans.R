@@ -1,12 +1,12 @@
-
+#' @include class_ProcSAS.R
+#'
 # Define class ------------------------------------------------------------
 
 ProcMeans <- S7::new_class(
   "ProcMeans",
+  parent = ProcSAS,
 
   properties = list(
-    pm_data    = S7::class_character,
-    pm_stats   = S7::class_character,
     pm_var     = S7::class_character,
     pm_by      = S7::class_character,
     pm_class   = S7::class_character,
@@ -16,94 +16,70 @@ ProcMeans <- S7::new_class(
     pm_types   = S7::class_character,
     pm_weight  = S7::class_character,
     pm_ways    = S7::class_character,
-    pm_output  = S7::class_list,
-    sas_source = S7::class_character
-  )
+    pm_output  = S7::class_list
+  ),
+
+  constructor = function(code_sas) {
+    code_net <- code_sas |>
+      remove_string(pattern  = "proc\\s*means\\s", ignore.case = T) |>
+      remove_string(pattern  = "run\\s*;", ignore.case = T) |>
+      remove_string(pattern  = ";") |>
+      gsub2(pattern = "\n|=|\\s+", replacement = " ") |>
+      decoupe_requete(
+        keywords = c(
+          "data",
+          "var",
+          "by",
+          "class",
+          "format",
+          "freq",
+          "id",
+          "types",
+          "weight",
+          "ways",
+          "output"
+        )
+      )
+
+    .extract_args <- function(keyword){
+      splitws(code_net$text[(code_net$key_word == keyword)])
+    }
+
+
+    ## Output as a list
+    if(!identical(.extract_args("output"), character(0))){
+      output <- decoupe_requete(
+        requete = code_net$text[(code_net$key_word == "output")],
+        keywords = c("out", "n", "mean", "std", "skewness", "kurtosis") # TODO  préparer un vecteur de mots clés
+      )
+      output_list <- as.list(output$text)
+      output_list <- lapply(output_list, splitws)
+      names(output_list) <- output$key_word
+
+    } else {
+      output_list <- list()
+    }
+
+
+    new_object(
+      .parent = ProcSAS(code_sas = code_sas),
+      pm_var     = .extract_args("var"),
+      pm_by      = .extract_args("by"),
+      pm_class   = .extract_args("class"),
+      pm_format  = .extract_args("format"),
+      pm_freq    = .extract_args("freq"),
+      pm_id      = .extract_args("id"),
+      pm_types   = .extract_args("types"),
+      pm_weight  = .extract_args("weight"),
+      pm_ways    = .extract_args("ways"),
+      pm_output  = output_list
+
+    )
+  }
 )
 
 
-# Constructor -------------------------------------------------------------
-
-#' proc_means
-#'
-#' @param code_sas
-#'
-#' @returns code R
-#' @export
-proc_means <- function(code_sas) {
-  code_net <- code_sas |>
-    remove_string(pattern  = "proc\\s*means\\s", ignore.case = T) |>
-    remove_string(pattern  = "run\\s*;", ignore.case = T) |>
-    remove_string(pattern  = ";") |>
-    gsub2(pattern = "\n|=|\\s+", replacement = " ") |>
-    decoupe_requete(
-      keywords = c(
-        "data",
-        "var",
-        "by",
-        "class",
-        "format",
-        "freq",
-        "id",
-        "types",
-        "weight",
-        "ways",
-        "output"
-      )
-    )
-
-  .extract_args <- function(keyword){
-    splitws(code_net$text[(code_net$key_word == keyword)])
-  }
-
-  # DATA=data <option>
-  net_data <- .extract_args("data")
-
-  ## data=
-  proc_means_data  <- net_data[1]
-
-  ## Options (stats)
-  proc_means_stats <- net_data[-1]
-
-
-  ## Output as a list
-  if(!identical(.extract_args("output"), character(0))){
-    output <- decoupe_requete(
-      requete = code_net$text[(code_net$key_word == "output")],
-      keywords = c("out", "n", "mean", "std", "skewness", "kurtosis") # TODO  préparer un vecteur de mots clés
-    )
-    output_list <- as.list(output$text)
-    output_list <- lapply(output_list, splitws)
-    names(output_list) <- output$key_word
-
-  } else {
-    output_list <- list()
-  }
-
-
-  ProcMeans(
-    pm_data    = proc_means_data,
-    pm_stats   = proc_means_stats,
-    pm_var     = .extract_args("var"),
-    pm_by      = .extract_args("by"),
-    pm_class   = .extract_args("class"),
-    pm_format  = .extract_args("format"),
-    pm_freq    = .extract_args("freq"),
-    pm_id      = .extract_args("id"),
-    pm_types   = .extract_args("types"),
-    pm_weight  = .extract_args("weight"),
-    pm_ways    = .extract_args("ways"),
-    pm_output  = output_list,
-    sas_source = code_sas
-
-  )
-}
-
-
 # Method: transpile to_dplyr -------------------------------------------------------
-
-transpile <- S7::new_generic("transpile", "x")
-
 
 S7::method(transpile, ProcMeans) <- function(x) {
 
@@ -117,8 +93,8 @@ S7::method(transpile, ProcMeans) <- function(x) {
   # data ----
   nb_vars <- length(x@pm_var)
   more_than_1_var <- nb_vars > 1 || any(grepl("-", x@pm_var))
-  is_default_stats <- length(x@pm_stats) == 0
-  dplyr_data <- x@pm_data
+  is_default_stats <- length(x@proc_options) == 0
+  dplyr_data <- x@proc_data
 
   # select() ----
   if (!identical(x@pm_var, character(0))) {
@@ -144,12 +120,12 @@ S7::method(transpile, ProcMeans) <- function(x) {
     dplyr_summarize <- "summary()"
 
   } else if (!more_than_1_var) { # summarize
-    dplyr_summarize <- paste0(x@pm_stats, "(", x@pm_var, ")") |>
+    dplyr_summarize <- paste0(x@proc_options, "(", x@pm_var, ")") |>
       transform_functions()
     dplyr_summarize <-  paste_function("summarize", paste(dplyr_summarize, collapse = ", "))
 
   } else { # summarize_all
-    dplyr_summarize <- paste(paste(x@pm_stats, x@pm_stats, sep = "="), collapse = ", ")
+    dplyr_summarize <- paste(paste(x@proc_options, x@proc_options, sep = "="), collapse = ", ")
     dplyr_summarize <- paste0("summarize_all(list(", dplyr_summarize, "))")
   }
 

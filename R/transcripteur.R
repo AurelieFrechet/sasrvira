@@ -5,10 +5,10 @@ reecriture <- function(id, code) {
       sasr_sql(code)
     },
     "proc contents" = {
-      transpile2(proc_contents(code))
+      transpile(ProcContents(code))
     },
     "proc means" = {
-      transpile(proc_means(code))
+      transpile(ProcMeans(code))
     }
   )
 }

@@ -1,0 +1,161 @@
+---
+title: "Transpiling SAS PROC Statements"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Transpiling SAS PROC Statements}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Transpiling SAS `PROC` Statements
+
+## Overview
+
+This package provides an experimental framework for parsing SAS `PROC` statements and translating them into equivalent R code. The core idea is to treat each SAS procedure as a structured object that can be inspected, transformed, and transpiled into another language.
+
+At the center of this design is the `ProcSAS` base class, which captures common metadata shared by all SAS procedures. Specific procedures such as `PROC CONTENTS`, `PROC PRINT`, and `PROC MEANS` are implemented as subclasses that extend this base representation.
+
+This vignette introduces the overall architecture and demonstrates how supported SAS procedures are parsed and transpiled.
+
+---
+
+## Architecture
+
+### The `ProcSAS` base class
+
+All SAS procedures are represented as S7 objects inheriting from `ProcSAS`. This base class is responsible for:
+
+- storing the original SAS code,
+- extracting the input dataset specified via the `DATA=` argument,
+- capturing remaining procedure-level options.
+
+Concrete procedure classes inherit this information and add their own parsing and transpilation logic.
+
+---
+
+## Parsing SAS procedures
+
+SAS code is supplied as a character string containing a `PROC` statement. The constructor identifies the first procedure encountered and instantiates the appropriate class.
+
+```r
+sas_code <- "proc contents data=mydata;"
+proc <- ProcContents(sas_code)
+proc
+```
+
+The resulting object exposes structured metadata that can be inspected programmatically.
+
+---
+
+## Transpilation workflow
+
+Each procedure class implements a `transpile()` method. This method translates the parsed SAS procedure into R code, returned as a character string.
+
+```r
+transpile(proc)
+```
+
+The exact output depends on the procedure and the options supplied in the original SAS code.
+
+---
+
+## Supported procedures
+
+The table below summarizes the SAS procedures currently supported by the package and their corresponding S7 classes.
+
+| SAS procedure | S7 class        | Status       | Notes |
+|--------------|-----------------|--------------|-------|
+| PROC CONTENTS | `ProcContents`  | Implemented  | Dataset structure inspection |
+| PROC PRINT    | `ProcPrint`     | Implemented  | Dataset preview / printing |
+| PROC MEANS    | `ProcMeans`     | Implemented  | Summary statistics with rich parsing |
+
+---
+
+Support refers to parsing and partial transpilation; not all SAS options are currently implemented.
+
+
+### `PROC PRINT`
+
+`PROC PRINT` is represented by the `ProcPrint` class. It provides a minimal translation suitable for printing or previewing a dataset in R.
+
+```r
+sas_code <- "proc print data=mydata;"
+proc <- ProcPrint(sas_code)
+transpile(proc)
+```
+
+---
+
+### `PROC MEANS`
+
+`PROC MEANS` is represented by the `ProcMeans` class and is the most extensively implemented procedure in the current framework. In addition to the dataset name, the constructor parses a wide range of commonly used `PROC MEANS` sub-statements and stores them as structured properties.
+
+The following SAS components are explicitly parsed when present:
+
+- `VAR`: analysis variables
+- `BY`: BY-group variables
+- `CLASS`: classification variables
+- `FORMAT`: format specifications
+- `FREQ`: frequency variable
+- `ID`: identifier variables
+- `TYPES`: type specifications
+- `WEIGHT`: weight variable
+- `WAYS`: number of ways
+- `OUTPUT`: output dataset and requested statistics
+
+This allows downstream transpilation logic to reason about the statistical intent of the procedure rather than relying on raw text manipulation.
+
+```r
+sas_code <- "
+proc means data=mydata;
+  var x y;
+  class group;
+  by region;
+  output out=summary
+    mean=mean_x mean_y
+    std=sd_x sd_y;
+run;
+"
+
+proc <- ProcMeans(sas_code)
+proc
+```
+
+Each parsed component is stored in a dedicated property (e.g. `pm_var`, `pm_class`, `pm_output`) and can be inspected programmatically:
+
+```r
+proc@pm_var
+proc@pm_class
+proc@pm_output
+```
+
+The `pm_output` property is represented as a named list, where each element corresponds to a statistic requested in the `OUTPUT` statement.
+
+The `transpile()` method for `ProcMeans` can use this structured representation to generate R code that mirrors the intent of the original SAS procedure. While the generated code is not guaranteed to be semantically identical to SAS output, it provides a clear and extensible mapping suitable for further refinement.
+
+---
+
+
+## Extending the framework
+
+New SAS procedures can be supported by subclassing `ProcSAS` and implementing a procedure-specific `transpile()` method. This design allows additional procedures to be added incrementally without changing the public API.
+
+Developers are encouraged to keep parsing logic localized to subclasses and to reuse the base metadata exposed by `ProcSAS`.
+
+---
+
+## Scope and limitations
+
+This framework is intended for exploratory and experimental use. The transpiled R code is not guaranteed to be semantically identical to the original SAS procedure, particularly for complex options or edge cases.
+
+Users should treat the output as a starting point for manual refinement rather than a drop-in replacement.
+
+---
+
+## Summary
+
+- SAS `PROC` statements are parsed into structured S7 objects
+- `ProcSAS` provides a shared abstraction across procedures
+- Procedure-specific subclasses implement transpilation
+- The system is extensible and designed for gradual expansion
+

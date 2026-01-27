@@ -1,3 +1,54 @@
+#' @title Base Class for Parsed SAS PROC Statements
+#'
+#' @description
+#' `ProcSAS` is an S7 base class representing a parsed SAS `PROC` statement.
+#' It stores the original SAS code and extracts structured metadata such as
+#' the input dataset and procedure options.
+#'
+#' @details
+#' The constructor parses the first `PROC` statement found in `code_sas`.
+#' The dataset name is extracted from the `DATA=` argument. Any remaining
+#' tokens in the `PROC` statement header are stored as procedure options.
+#'
+#' This class is intended to be subclassed by concrete SAS procedures
+#' (e.g. `PROC SORT`, `PROC MEANS`) and provides a common interface for
+#' SAS-to-* transpilation workflows.
+#'
+#' @param code_sas
+#' A length-one character vector containing SAS code with at least one
+#' `PROC` statement.
+#'
+#' @return
+#' An object of class `ProcSAS`.
+#'
+#' @section Properties:
+#' \describe{
+#'   \item{source}{Original SAS code supplied to the constructor.}
+#'   \item{proc_data}{Name of the dataset specified in the `DATA=` argument.}
+#'   \item{proc_options}{Character vector of remaining procedure options.}
+#' }
+#'
+#' @section Methods:
+#' \describe{
+#'   \item{transpile()}{Generic method for translating the SAS procedure
+#'   into another target language. Must be implemented by subclasses.}
+#' }
+#'
+#' @import S7
+#'
+#' @seealso
+#' [transpile()] for the generic interface implemented by subclasses.
+#'
+#' @family SAS procedure classes
+#'
+#' @keywords internal
+#'
+#' @examples
+#' sas_code <- "proc sort data=mydata out=sorted; by id;"
+#' proc <- ProcSAS(sas_code)
+#' proc
+#'
+#' @export
 ProcSAS <- new_class(
   "ProcSAS",
   properties = list(
@@ -23,6 +74,39 @@ ProcSAS <- new_class(
     }
 )
 
+
+#' Transpile a SAS Procedure into Another Language
+#'
+#' @description
+#' `transpile()` is a generic function that translates a parsed SAS
+#' procedure object into a target language representation. The output
+#' is typically a character string containing code in the target language.
+#'
+#' @param x An object representing a parsed SAS procedure. Must be a subclass
+#' of [ProcSAS].
+#' @param ... Additional arguments passed to method implementations (currently unused).
+#'
+#' @return
+#' A character string containing the translated code. Subclasses of
+#' `ProcSAS` must implement this method to provide procedure-specific
+#' translations.
+#'
+#' @details
+#' The default method for `ProcSAS` raises an error. Each subclass (e.g.,
+#' `ProcContents`, `ProcPrint`, `ProcMeans`) must provide its own
+#' implementation of `transpile()` to generate meaningful output.
+#'
+#' @seealso
+#' [ProcSAS] and its subclasses for parsed SAS procedures.
+#'
+#' @examples
+#' \dontrun{
+#' sas_code <- "proc print data=mydata;"
+#' proc <- ProcPrint(sas_code)
+#' transpile(proc)  # Calls the subclass method
+#' }
+#'
+#' @export
 transpile <- S7::new_generic("transpile", "x")
 
 S7::method(transpile, ProcSAS) <- function(x) {

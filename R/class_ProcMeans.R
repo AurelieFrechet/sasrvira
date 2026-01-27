@@ -2,6 +2,74 @@
 #'
 # Define class ------------------------------------------------------------
 
+#' @title Parsed Representation of a SAS PROC MEANS Statement
+#'
+#' @description
+#' `ProcMeans` is an S7 class representing a parsed SAS `PROC MEANS`
+#' statement. It extends [ProcSAS] and implements procedure-specific
+#' parsing and transpilation behavior.
+#'
+#' @details
+#' In addition to the core metadata extracted by [ProcSAS], this class
+#' parses common `PROC MEANS` statements such as `VAR`, `BY`, `CLASS`,
+#' `WEIGHT`, and `OUTPUT`. These components are stored as structured
+#' properties and can be used by the `transpile()` method or downstream
+#' workflows.
+#'
+#' The `transpile()` method translates a `PROC MEANS` statement into
+#' equivalent R code. The returned value is a character string representing
+#' the generated R expression.
+#'
+#' @section Inheritance:
+#' `ProcMeans` inherits from [ProcSAS] and therefore exposes the same
+#' base properties:
+#' \describe{
+#'   \item{source}{Original SAS code supplied to the constructor.}
+#'   \item{proc_data}{Name of the dataset specified in the `DATA=` argument.}
+#'   \item{proc_options}{Character vector of remaining procedure options.}
+#' }
+#'
+#' @section Additional Properties:
+#' \describe{
+#'   \item{pm_var}{Variables specified in the `VAR` statement.}
+#'   \item{pm_by}{Variables specified in the `BY` statement.}
+#'   \item{pm_class}{Variables specified in the `CLASS` statement.}
+#'   \item{pm_format}{Formats specified in the `FORMAT` statement.}
+#'   \item{pm_freq}{Frequency variable specified in the `FREQ` statement.}
+#'   \item{pm_id}{Variables specified in the `ID` statement.}
+#'   \item{pm_types}{Types specified in the `TYPES` statement.}
+#'   \item{pm_weight}{Weight variable specified in the `WEIGHT` statement.}
+#'   \item{pm_ways}{Ways specified in the `WAYS` statement.}
+#'   \item{pm_output}{List describing the `OUTPUT` statement.}
+#' }
+#'
+#' @section Methods:
+#' \describe{
+#'   \item{transpile()}{Translate the SAS `PROC MEANS` statement into R code.}
+#' }
+#'
+#' @import S7
+#'
+#' @seealso
+#' [ProcSAS] for the parent class,
+#' [transpile()] for the generic interface.
+#'
+#' @family SAS procedure classes
+#'
+#' @keywords internal
+#'
+#' @examples
+#' sas_code <- "
+#' proc means data=mydata;
+#'   var x y;
+#'   class group;
+#'   output out=summary mean=;
+#' run;
+#' "
+#' proc <- ProcMeans(sas_code)
+#' proc
+#'
+#' @export
 ProcMeans <- S7::new_class(
   "ProcMeans",
   parent = ProcSAS,

@@ -99,6 +99,14 @@ S7::method(transpile, ProcSort) <- function(x) {
 
   requete_dplyr <- paste(c(x@proc_data, dplyr_groupby), collapse = " %>%\n\t")
 
+  out_table <- x@proc_options[grepl(pattern = "out=", x = x@proc_options)]|>
+    remove_string(pattern  = "out=", ignore.case = T)
+
+
+  if(!identical(out_table, character(0))) {
+    requete_dplyr <- paste(out_table, "<-", requete_dplyr)
+  }
+
   return(requete_dplyr)
 
 }

@@ -13,7 +13,8 @@ test_that("Descending", {
   by  descending Sepal.Lenght Petal.Lenght;
   run;"
   test <- ProcSort(code_sas)
-  transpile(test)
+  expect_equal(transpile(test),
+               "iris %>%\n\tarrange(desc(Sepal.Lenght), Petal.Lenght)")
 })
 
 
@@ -24,18 +25,19 @@ test_that("With out table", {
     by sex descending age descending name;
    run;"
   test <- ProcSort(code_sas)
-  transpile(test)
+  expect_equal(transpile(test),
+               "class <- sashelp.class %>%\n\tarrange(sex, desc(age), desc(name))")
 })
 
-## Old tests
+## Old tests -----
 test_that("Sort simple", {
   code_sas = "proc sort data=agregtva;
   by AA_CODET;
   run;"
 
   test <- ProcSort(code_sas)
-  # expect_equal(sasr_sort(code_sas),
-  #              "agregtva %>% arrange(AA_CODET)")
+  expect_equal(transpile(test),
+               "agregtva %>%\n\tarrange(AA_CODET)")
 })
 
 
@@ -45,6 +47,6 @@ test_that("Sort descendant et out : exemple support sas", {
   run;"
 
   test <- ProcSort(code_sas)
-  # expect_equal(sasr_sort(code_sas),
-  #              "sorted <- account %>% arrange(town, desc(debt), accountnumber)")
+  expect_equal(transpile(test),
+               "sorted <- account %>%\n\tarrange(town, desc(debt), accountnumber)")
 })

@@ -24,6 +24,7 @@ Collate:
     'class_ProcContents.R'
     'class_ProcMeans.R'
     'class_ProcPrint.R'
+    'class_ProcSort.R'
     'decoupe.R'
     'expressions.R'
     'get_SAS_procedure.R'

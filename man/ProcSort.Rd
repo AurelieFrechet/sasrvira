@@ -64,7 +64,8 @@ Other SAS procedure classes:
 \code{\link{ProcContents}()},
 \code{\link{ProcMeans}()},
 \code{\link{ProcPrint}()},
-\code{\link{ProcSAS}()}
+\code{\link{ProcSAS}()},
+\code{\link{ProcSQL}()}
 }
 \concept{SAS procedure classes}
 \keyword{internal}

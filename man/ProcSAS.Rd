@@ -57,6 +57,7 @@ Other SAS procedure classes:
 \code{\link{ProcContents}()},
 \code{\link{ProcMeans}()},
 \code{\link{ProcPrint}()},
+\code{\link{ProcSQL}()},
 \code{\link{ProcSort}()}
 }
 \concept{SAS procedure classes}

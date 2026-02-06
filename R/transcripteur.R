@@ -2,7 +2,7 @@ reecriture <- function(id, code) {
   switch(
     tolower(id),
     "proc sql" = {
-      sasr_sql(code)
+      transpile(ProcSQL(code))
     },
     "proc contents" = {
       transpile(ProcContents(code))

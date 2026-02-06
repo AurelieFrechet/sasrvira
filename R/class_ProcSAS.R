@@ -61,7 +61,7 @@ ProcSAS <- new_class(
       splitted_proc <- code_sas |> strsplit(split = ";") |> unlist() |> trimws()
 
       infos_contents <- splitted_proc[1] |>
-        remove_string(pattern  = "proc\\s*\\w+\\s", ignore.case = T) |>
+        remove_string(pattern  = "proc\\s*\\w+\\b", ignore.case = T) |>
         gsub2(pattern = "\\s?=\\s?", replacement = "=") |>
         remove_string(pattern  = "data\\s?=", ignore.case = T) |>
         trimws() |> splitws()

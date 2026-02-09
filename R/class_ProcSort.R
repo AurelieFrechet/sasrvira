@@ -64,8 +64,8 @@ ProcSort <- S7::new_class(
   properties = list(
     ps_by  = S7::class_character
   ),
-  constructor = function(code_sas) {
-    code_net <- code_sas |>
+  constructor = function(sas_code) {
+    code_net <- sas_code |>
       remove_string(pattern  = "proc\\s*sort\\s", ignore.case = T) |>
       remove_string(pattern  = "run\\s*;", ignore.case = T) |>
       remove_string(pattern  = ";") |>
@@ -83,7 +83,7 @@ ProcSort <- S7::new_class(
 
 
     new_object(
-      .parent = ProcSAS(code_sas = code_sas),
+      .parent = ProcSAS(sas_code = sas_code),
       ps_by  = by_arg
     )
   }

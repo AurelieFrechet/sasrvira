@@ -4,10 +4,10 @@
 \alias{decouper_SAS}
 \title{Decoupe code SAS}
 \usage{
-decouper_SAS(code_sas)
+decouper_SAS(sas_code)
 }
 \arguments{
-\item{code_sas}{: code SAS en entrée, non découpé par lignes}
+\item{sas_code}{: code SAS en entrée, non découpé par lignes}
 }
 \value{
 liste d'élements : place, texte et id

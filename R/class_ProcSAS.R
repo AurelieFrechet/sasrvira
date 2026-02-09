@@ -6,7 +6,7 @@
 #' the input dataset and procedure options.
 #'
 #' @details
-#' The constructor parses the first `PROC` statement found in `code_sas`.
+#' The constructor parses the first `PROC` statement found in `sas_code`.
 #' The dataset name is extracted from the `DATA=` argument. Any remaining
 #' tokens in the `PROC` statement header are stored as procedure options.
 #'
@@ -14,7 +14,7 @@
 #' (e.g. `PROC SORT`, `PROC MEANS`) and provides a common interface for
 #' SAS-to-* transpilation workflows.
 #'
-#' @param code_sas
+#' @param sas_code
 #' A length-one character vector containing SAS code with at least one
 #' `PROC` statement.
 #'
@@ -57,8 +57,8 @@ ProcSAS <- new_class(
     proc_options = S7::class_character
   ),
   constructor =
-    function(code_sas) {
-      splitted_proc <- code_sas |> strsplit(split = ";") |> unlist() |> trimws()
+    function(sas_code) {
+      splitted_proc <- sas_code |> strsplit(split = ";") |> unlist() |> trimws()
 
       infos_contents <- splitted_proc[1] |>
         remove_string(pattern  = "proc\\s*\\w+\\b", ignore.case = T) |>
@@ -68,7 +68,7 @@ ProcSAS <- new_class(
 
       new_object(
         .parent = S7_object(),
-        source = code_sas,
+        source = sas_code,
         proc_data    = infos_contents[1],
         proc_options = infos_contents[-1]
       )

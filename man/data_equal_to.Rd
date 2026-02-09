@@ -4,10 +4,10 @@
 \alias{data_equal_to}
 \title{data_equal_to}
 \usage{
-data_equal_to(code_sas)
+data_equal_to(sas_code)
 }
 \arguments{
-\item{code_sas}{character: code sas}
+\item{sas_code}{character: code sas}
 }
 \description{
 detecte la valeur da data et la renvoie, contenur dans une

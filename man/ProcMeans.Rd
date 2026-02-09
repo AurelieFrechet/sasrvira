@@ -4,7 +4,7 @@
 \alias{ProcMeans}
 \title{Parsed Representation of a SAS PROC MEANS Statement}
 \usage{
-ProcMeans(code_sas)
+ProcMeans(sas_code)
 }
 \description{
 `ProcMeans` is an S7 class representing a parsed SAS `PROC MEANS`

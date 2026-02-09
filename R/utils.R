@@ -1,9 +1,9 @@
 #' data_equal_to
 #' @description detecte la valeur da data et la renvoie, contenur dans une
 #' fonction file.path si elle est associée à une librairie SAS
-#' @param code_sas character: code sas
-data_equal_to <- function(code_sas){
-  data_equal <- match_multiple_string(x = code_sas,
+#' @param sas_code character: code sas
+data_equal_to <- function(sas_code){
+  data_equal <- match_multiple_string(x = sas_code,
             pattern = "data\\s?=\\s?([0-9a-zA-Z._]+)")[[1]]
 
   if (grepl(x = data_equal, pattern = "\\.")){

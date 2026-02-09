@@ -71,8 +71,8 @@ test_that("Cas avec le mot clé contenu dans un mot", {
 
 
 test_that("decoupe sas - Code non reconnu", {
-  code_sas     <- "Ceci n'est pas du code SAS"
-  code_decoupe <- decouper_SAS(code_sas)
+  sas_code     <- "Ceci n'est pas du code SAS"
+  code_decoupe <- decouper_SAS(sas_code)
   expect_length(code_decoupe, 3) # liste de taille 3
   expect_equal(names(code_decoupe), c("place", "texte", "id"))
   expect_length(code_decoupe$place, 0)
@@ -82,7 +82,7 @@ test_that("decoupe sas - Code non reconnu", {
 
 
 test_that("decoupe sas - Commentaires", {
-  code_sas     <-
+  sas_code     <-
     "/*Ceci est un commentaire*/
   /*Ceci
   est un
@@ -90,7 +90,7 @@ test_that("decoupe sas - Commentaires", {
   multilignes*/
   *Ceci est une ligne ;
   Ceci n'est pas un commentaire * "
-  code_decoupe <- decouper_SAS(code_sas)
+  code_decoupe <- decouper_SAS(sas_code)
   expect_length(code_decoupe, 3) # liste de taille 3
   expect_equal(names(code_decoupe), c("place", "texte", "id"))
   expect_equal(
@@ -106,7 +106,7 @@ test_that("decoupe sas - Commentaires", {
 
 
 test_that("decoupe sas - Procédures", {
-  code_sas     <-
+  sas_code     <-
     "proc contents data = table;
   run;
   proc means data= table;
@@ -128,7 +128,7 @@ RUN;
 /*Ceci est encore un
 commentaire*/
 "
-  code_decoupe <- decouper_SAS(code_sas)
+  code_decoupe <- decouper_SAS(sas_code)
   expect_length(code_decoupe, 3) # liste de taille 3
   expect_equal(names(code_decoupe), c("place", "texte", "id"))
   expect_equal(

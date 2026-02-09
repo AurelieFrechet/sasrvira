@@ -4,7 +4,7 @@
 \alias{ProcContents}
 \title{Parsed Representation of a SAS PROC CONTENTS Statement}
 \usage{
-ProcContents(code_sas)
+ProcContents(sas_code)
 }
 \description{
 `ProcContents` is an S7 class representing a parsed SAS `PROC CONTENTS`

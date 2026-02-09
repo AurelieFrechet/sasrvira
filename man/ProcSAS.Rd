@@ -4,10 +4,10 @@
 \alias{ProcSAS}
 \title{Base Class for Parsed SAS PROC Statements}
 \usage{
-ProcSAS(code_sas)
+ProcSAS(sas_code)
 }
 \arguments{
-\item{code_sas}{A length-one character vector containing SAS code with at least one
+\item{sas_code}{A length-one character vector containing SAS code with at least one
 `PROC` statement.}
 }
 \value{
@@ -19,7 +19,7 @@ It stores the original SAS code and extracts structured metadata such as
 the input dataset and procedure options.
 }
 \details{
-The constructor parses the first `PROC` statement found in `code_sas`.
+The constructor parses the first `PROC` statement found in `sas_code`.
 The dataset name is extracted from the `DATA=` argument. Any remaining
 tokens in the `PROC` statement header are stored as procedure options.
 

@@ -1,5 +1,5 @@
-sasr_import <- function(code_sas) {
-  code_net <- code_sas |>
+sasr_import <- function(sas_code) {
+  code_net <- sas_code |>
     remove_string(pattern = "proc\\s+import\\s+", ignore.case = T) |>
     remove_string(pattern = "run\\s*;", ignore.case = T) |>
     remove_string(pattern = ";") |>

@@ -14,8 +14,8 @@ test_that("extract_table_name", {
 })
 
 test_that("read_join", {
-  expect_equal(read_join("t1", "t2", "t1.id = t2.fk_id"), "\"id\" = \"fk_id\"")
-  expect_equal(read_join("t1", "t2", "t2.fk_id = t1.id"), "\"id\" = \"fk_id\"")
+  expect_equal(mutate_join("t1", "t2", "t1.id = t2.fk_id"), "\"id\" = \"fk_id\"")
+  expect_equal(mutate_join("t1", "t2", "t2.fk_id = t1.id"), "\"id\" = \"fk_id\"")
 })
 
 
@@ -110,7 +110,7 @@ test_that("select all + from + where", {
     select * from iris where Species=\"setosa\";
   quit;"
   test <- ProcSQL(code_sql)
-  expect_equal(sasr_sql(code_sql), "iris %>%\n\tfilter(Species == \"setosa\")")
+  expect_equal(transpile(test), "iris %>%\n\tfilter(Species == \"setosa\")")
 
 })
 

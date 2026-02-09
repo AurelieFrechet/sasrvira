@@ -87,8 +87,8 @@ ProcMeans <- S7::new_class(
     pm_output  = S7::class_list
   ),
 
-  constructor = function(code_sas) {
-    code_net <- code_sas |>
+  constructor = function(sas_code) {
+    code_net <- sas_code |>
       remove_string(pattern  = "proc\\s*means\\s", ignore.case = T) |>
       remove_string(pattern  = "run\\s*;", ignore.case = T) |>
       remove_string(pattern  = ";") |>
@@ -130,7 +130,7 @@ ProcMeans <- S7::new_class(
 
 
     new_object(
-      .parent = ProcSAS(code_sas = code_sas),
+      .parent = ProcSAS(sas_code = sas_code),
       pm_var     = .extract_args("var"),
       pm_by      = .extract_args("by"),
       pm_class   = .extract_args("class"),

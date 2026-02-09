@@ -1,6 +1,6 @@
 test_that("proc means : multiple by and class and no indics", {
-  code_sas = "proc means data = diamonds; var carat; by color; class cut; run;"
-  test <- ProcMeans(code_sas)
+  sas_code = "proc means data = diamonds; var carat; by color; class cut; run;"
+  test <- ProcMeans(sas_code)
 
   ## Correct properties
   expect_equal(test@proc_data, "diamonds")
@@ -21,13 +21,13 @@ test_that("proc means : multiple by and class and no indics", {
 
 # With OUTPOUT ------------------------------------------------------------
 test_that("proc means avec output iris", {
-  code_sas = "proc means data = sashelp.iris;
+  sas_code = "proc means data = sashelp.iris;
               by Species;
               var PetalLength;
               output out = res mean=moyenne;
               run;"
 
-  test <- ProcMeans(code_sas)
+  test <- ProcMeans(sas_code)
 
   expect_equal(
     transpile(test),
@@ -36,12 +36,12 @@ test_that("proc means avec output iris", {
 })
 
 test_that("proc means avec output test guido", {
-  code_sas = "PROC MEANS DATA=fic1 ;
+  sas_code = "PROC MEANS DATA=fic1 ;
   VAR  x1 x2 x3 ind;
   OUTPUT OUT=fic2  mean=mx1 mx2 mx3  std= ex1 ex2 skewness=sx1 kurtosis=kx1;
   run;"
 
-  test <- ProcMeans(code_sas)
+  test <- ProcMeans(sas_code)
 
   expect_equal(
     transpile(test),
@@ -51,9 +51,9 @@ test_that("proc means avec output test guido", {
 # Without OUTPUT ----------------------------------------------------------
 
 test_that("proc means : mean and sum on multiple variable", {
-  code_sas = "proc means data=iris mean sum; var Sepal.Length Sepal.Width Petal.Length Petal.Width; run;"
+  sas_code = "proc means data=iris mean sum; var Sepal.Length Sepal.Width Petal.Length Petal.Width; run;"
 
-  test <- ProcMeans(code_sas)
+  test <- ProcMeans(sas_code)
 
   expect_equal(
     transpile(test),
@@ -62,9 +62,9 @@ test_that("proc means : mean and sum on multiple variable", {
 })
 
 test_that("proc means : variables separated by -", {
-  code_sas = "proc means data=iris mean sum; var Sepal.Length-Petal.Width; run;"
+  sas_code = "proc means data=iris mean sum; var Sepal.Length-Petal.Width; run;"
 
-  test <- ProcMeans(code_sas)
+  test <- ProcMeans(sas_code)
 
   expect_equal(
     transpile(test),
@@ -73,9 +73,9 @@ test_that("proc means : variables separated by -", {
 })
 
 test_that("proc means : one var", {
-  code_sas = "proc means data=iris mean sum; var Sepal.Length; run;"
+  sas_code = "proc means data=iris mean sum; var Sepal.Length; run;"
 
-  test <- ProcMeans(code_sas)
+  test <- ProcMeans(sas_code)
 
   expect_equal(
     transpile(test),
@@ -84,9 +84,9 @@ test_that("proc means : one var", {
 })
 
 test_that("proc means : one var, correct indic", {
-  code_sas = "proc means data=iris n mean sum p25 p1; var Sepal.Length; run;"
+  sas_code = "proc means data=iris n mean sum p25 p1; var Sepal.Length; run;"
 
-  test <- ProcMeans(code_sas)
+  test <- ProcMeans(sas_code)
 
   expect_equal(
     transpile(test),
@@ -100,8 +100,8 @@ test_that("proc means : one var, correct indic", {
 
 
 test_that("proc means : multiple by and class and no indics", {
-  code_sas = "proc means data = diamonds; var carat; by color; class cut; run;"
-  test <- ProcMeans(code_sas)
+  sas_code = "proc means data = diamonds; var carat; by color; class cut; run;"
+  test <- ProcMeans(sas_code)
 
   expect_equal(
     transpile(test),
@@ -110,10 +110,10 @@ test_that("proc means : multiple by and class and no indics", {
 })
 
 test_that("proc means : multiple variable and no indic", {
-  code_sas = "proc means data=diamonds;
+  sas_code = "proc means data=diamonds;
   var carat price;
   run;"
-  test <- ProcMeans(code_sas)
+  test <- ProcMeans(sas_code)
 
   expect_equal(
     transpile(test),
@@ -124,9 +124,9 @@ test_that("proc means : multiple variable and no indic", {
 # Without var -------------------------------------------------------------
 
 test_that("proc means without var", {
-  code_sas = "proc means data = sashelp.iris;
+  sas_code = "proc means data = sashelp.iris;
               run;"
-  test <- ProcMeans(code_sas)
+  test <- ProcMeans(sas_code)
 
   expect_equal(
     transpile(test),
@@ -134,10 +134,10 @@ test_that("proc means without var", {
 })
 
 test_that("proc means without var with by", {
-  code_sas = "proc means data = sashelp.iris;
+  sas_code = "proc means data = sashelp.iris;
               by Species;
               run;"
-  test <- ProcMeans(code_sas)
+  test <- ProcMeans(sas_code)
 
   expect_equal(
     transpile(test),

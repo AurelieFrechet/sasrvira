@@ -1,18 +1,36 @@
-paste_function <- function(fonction, contenu){
-  paste0(fonction, "(", contenu, ")")
+#' Paste function calls as strings
+#'
+#' @description
+#' Utility functions to build character strings representing common
+#' R function calls applied to a given content.
+#'
+#' @param function_name Character string giving the function name.
+#' @param content Character string representing the function argument(s).
+#'
+#' @return A character string representing a function call.
+#'
+#' @keywords internal
+#'
+#' @examples
+#' paste_function("mean", "x")
+#' paste_str("my_object")
+#' paste_summary("my_object")
+#' paste_table("my_vector")
+paste_function <- function(function_name, content) {
+  paste0(function_name, "(", content, ")")
 }
 
-#' paste_str
-#' @description Colle la fonction str() autour d'un contenu
-#' @param contenu chaine de caractere contenu de la fonction
-paste_str <- function(contenu) {
-  paste_function("str", contenu)
+#' @rdname paste_function
+paste_str <- function(content) {
+  paste_function("str", content)
 }
 
-paste_summary <- function(contenu){
-  paste_function("summary", contenu)
+#' @rdname paste_function
+paste_summary <- function(content) {
+  paste_function("summary", content)
 }
 
-paste_table <- function(contenu){
-  paste_function("table", contenu)
+#' @rdname paste_function
+paste_table <- function(content) {
+  paste_function("table", content)
 }

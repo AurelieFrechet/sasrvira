@@ -1,12 +1,12 @@
 test_that("proc contents no options", {
-  code_sas <- "proc contents data=iris; run;"
-  test <- ProcContents(code_sas)
+  sas_code <- "proc contents data=iris; run;"
+  test <- ProcContents(sas_code)
   expect_equal(transpile(test), "str(iris)")
 })
 
 
 test_that("proc contents options whatever", {
-  code_sas <- "proc contents data=iris noprint; run;"
-  test <- ProcContents(code_sas)
+  sas_code <- "proc contents data=iris noprint; run;"
+  test <- ProcContents(sas_code)
   expect_equal(transpile(test), "str(iris)")
 })

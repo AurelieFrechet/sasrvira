@@ -1,6 +1,6 @@
 
 
-# decoupe_requete --------------------------------------------------------
+# split_sql_query --------------------------------------------------------
 
 test_that("decoupe sql - Cas normal", {
   code_sql <- "select a, b
@@ -10,7 +10,7 @@ test_that("decoupe sql - Cas normal", {
           group by a
           having count(*)>1
           order by a, b"
-  sentence <- decoupe_requete(requete = code_sql,
+  sentence <- split_sql_query(query = code_sql,
                               keywords = c("select", "from", "join","where", "group by", "having", "order by", "limit"))
   expect_length(sentence, 2)
   expect_length(sentence$key_word, 7)
@@ -24,7 +24,7 @@ test_that("decoupe sql - Cas normal", {
 
 test_that("decoupe sql - Ignore CASE", {
   code_sql <- "SELECT * FROM table WHERE nom=\"Frechet\""
-  sentence <- decoupe_requete(code_sql,
+  sentence <- split_sql_query(code_sql,
                               keywords = c("select", "from", "where", "order by", "group by", "limit"))
   expect_length(sentence, 2)
   expect_length(sentence$key_word, 3)
@@ -39,20 +39,20 @@ test_that("decoupe sql - Ignore CASE", {
 
 test_that("decoupe sql - Cas vide", {
   code_sql <- "phrase qui n'a aucun rapport"
-  sentence <- decoupe_requete(code_sql,
+  sentence <- split_sql_query(code_sql,
                               keywords = c("select", "from", "where", "order by", "group by", "limit"))
   expect_null(sentence)
-  expect_message(decoupe_requete(
+  expect_message(split_sql_query(
     code_sql,
     keywords = c("select", "from", "where", "order by", "group by", "limit")
   ),
-  "Requete does not contain key words")
+  "Query does not contain key words")
 
 })
 
 test_that("first argument split", {
-  expect_no_error(sentence1 <- decoupe_requete(requete = "data sashelp.iris", keywords = c("data")))
-  expect_no_error(sentence2 <- decoupe_requete(requete = "   data sashelp.iris", keywords = c("data")))
+  expect_no_error(sentence1 <- split_sql_query(query = "data sashelp.iris", keywords = c("data")))
+  expect_no_error(sentence2 <- split_sql_query(query = "   data sashelp.iris", keywords = c("data")))
   expect_equal(sentence1$key_word, "data")
   expect_equal(sentence2$key_word, "data")
   expect_equal(sentence1$text, "sashelp.iris")
@@ -62,7 +62,7 @@ test_that("first argument split", {
 
 test_that("Cas avec le mot clé contenu dans un mot", {
   phrase <- "Ceci n'est pas une phrase à découper"
-  sentence <- decoupe_requete(requete = phrase, keywords = c("as", "e", "r", "C"))
+  sentence <- split_sql_query(query = phrase, keywords = c("as", "e", "r", "C"))
   expect_null(sentence)
 })
 

@@ -269,7 +269,7 @@ sql_to_dplyr <- function(code_sql) {
 
   code_sql <- remove_string(code_sql, ";")
   # Initialisation
-  sentence <- decoupe_requete(code_sql,
+  sentence <- split_sql_query(code_sql,
                               keywords = c("select",
                                            "from",
                                            "where",
@@ -457,7 +457,7 @@ S7::method(transpile, ProcSQL) <- function(x) {
   requetes <- requetes[-which(requetes == "")]
 
 
-  # Mise en fonction dplyr pour chaque requete
+  # Mise en fonction dplyr pour chaque query
   requetes_dplyr <- lapply(requetes, sql_to_dplyr) |>
     unlist()
   requetes_dplyr <- paste(requetes_dplyr, collapse = "\n")

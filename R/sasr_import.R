@@ -6,8 +6,8 @@ sasr_import <- function(sas_code) {
     gsub2(pattern = "\n", replacement = " ") |>
     gsub2(pattern = "=", replacement = " ") |>
     gsub2(pattern = "\\s+", replacement = " ") |>
-    decoupe_requete(
-      requete = _,
+    split_sql_query(
+      query = _,
       keywords = c("datafile",
                     "table",
                     "out",

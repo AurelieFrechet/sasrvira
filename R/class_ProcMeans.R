@@ -93,7 +93,7 @@ ProcMeans <- S7::new_class(
       remove_string(pattern  = "run\\s*;", ignore.case = T) |>
       remove_string(pattern  = ";") |>
       gsub2(pattern = "\n|=|\\s+", replacement = " ") |>
-      decoupe_requete(
+      split_sql_query(
         keywords = c(
           "data",
           "var",
@@ -116,8 +116,8 @@ ProcMeans <- S7::new_class(
 
     ## Output as a list
     if(!identical(.extract_args("output"), character(0))){
-      output <- decoupe_requete(
-        requete = code_net$text[(code_net$key_word == "output")],
+      output <- split_sql_query(
+        query = code_net$text[(code_net$key_word == "output")],
         keywords = c("out", "n", "mean", "std", "skewness", "kurtosis") # TODO  préparer un vecteur de mots clés
       )
       output_list <- as.list(output$text)

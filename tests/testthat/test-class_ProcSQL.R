@@ -281,7 +281,7 @@ INNER JOIN Shippers ON Orders.ShipperID = Shippers.ShipperID;
 #
 # })
 #
-# test_that("requete Sylvain 2", {
+# test_that("query Sylvain 2", {
 #   code_sql = "CREATE TABLE LIB.JOINTURE AS
 #   SELECT DISTINCT a.CUSTUMER_ID, a.DATE, sum(b.price) as total_price
 #   FROM LIB2.TABLE1 as a

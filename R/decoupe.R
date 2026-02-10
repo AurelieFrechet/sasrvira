@@ -47,18 +47,30 @@ split_sas_code <- function(sas_code) {
   ))
 }
 
-#' decoupe_requete
-#' @description lit une requete sql et renvoie une data.frame avec les mots clés (kw)
-#' et les valeurs associées (sentence)
-#' @param requete une seule requete sql
-#' @param keywords : mots clés de découpe (select, from, etc)
+#' Split an SQL query into keyword-based blocks
 #'
-#' @return vecteur nommé des blocs, le nom associé correspond aux mots clés
+#' @description
+#' Parses a single SQL query and splits it into logical blocks based on
+#' specified SQL keywords (e.g. SELECT, FROM, WHERE). The function returns
+#' the extracted keywords and their associated query segments.
+#'
+#' @param query Character string containing a single SQL query.
+#' @param keywords Character vector of SQL keywords used as split points
+#'   (e.g. \code{c("select", "from", "where")}).
+#'
+#' @return
+#' A list with two elements:
+#' \itemize{
+#'   \item \code{key_word}: SQL keywords found in the query (lowercased)
+#'   \item \code{text}: query fragments associated with each keyword
+#' }
+#'
+#' Returns \code{NULL} if none of the specified keywords are found.
+#'
 #' @export
-#'
-decoupe_requete <- function(requete, keywords){
+split_sql_query <- function(query, keywords){
   # Clean spaces and newlines
-  requete <-  clean_newlines(requete)
+  query <-  clean_newlines(query)
   look_ahead <- paste0("(?<=.)(?=(\\b", keywords, "\\b))")
   look_behind <- paste0("(?=.)(?<=(\\b", keywords, "\\b))")
 
@@ -68,17 +80,15 @@ decoupe_requete <- function(requete, keywords){
                        paste(look_ahead, collapse = "|"), '|',
                        paste(look_behind, collapse = "|"))
 
-if(!grepl(pattern = pattern_kw, x = requete, ignore.case = T, perl = T)){
-  message("Requete does not contain key words")
-  return(NULL)
-}
+  if(!grepl(pattern = pattern_kw, x = query, ignore.case = T, perl = T)){
+    message("Query does not contain key words")
+    return(NULL)
+  }
 
-parts <- strsplit(trimws(requete),
-                  pattern_kw,
-                  perl=TRUE)[[1]]
+  parts <- strsplit(trimws(query), pattern_kw, perl = TRUE)[[1]]
 
-key_word = tolower(parts[seq(1, length(parts)-1, by = 2)])
-content  = trimws(parts[seq(2, length(parts), by = 2)])
+  key_word = tolower(parts[seq(1, length(parts) - 1, by = 2)])
+  content  = trimws(parts[seq(2, length(parts), by = 2)])
 
 
   return(list(key_word = key_word, text = content))

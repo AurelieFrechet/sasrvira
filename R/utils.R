@@ -80,7 +80,7 @@ transform_casewhen <- function(chaine){
       perl = T
     )
 
-  requete <-
+  query <-
     paste(when_then[[1]], when_then[[2]], sep = " ~ ") |>
     paste(collapse = ",\n")
 
@@ -92,13 +92,13 @@ transform_casewhen <- function(chaine){
     )
 
   if (!is.null(else_then)) {
-    requete <- paste0(requete, ",\nTRUE ~ ", else_then[1])
+    query <- paste0(query, ",\nTRUE ~ ", else_then[1])
   }
 
-  requete <- paste0("case_when(", requete, ")") |>
+  query <- paste0("case_when(", query, ")") |>
     transform_conditions()
 
-  return(requete)
+  return(query)
 
 }
 

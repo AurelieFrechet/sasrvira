@@ -70,7 +70,7 @@ ProcSort <- S7::new_class(
       remove_string(pattern  = "run\\s*;", ignore.case = T) |>
       remove_string(pattern  = ";") |>
       gsub2(pattern = "\n|=|\\s+", replacement = " ") |>
-      decoupe_requete(
+      split_sql_query(
         keywords = c(
           "data",
           "by"

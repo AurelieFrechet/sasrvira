@@ -1,6 +1,6 @@
 #' @include class_ProcSAS.R
 #' @include utils.R
-#' @include decoupe.R
+#' @include split_code.R
 #'
 #' @title Parsed Representation of a SAS PROC SQL Statement
 #'
@@ -247,7 +247,7 @@ extract_joins <- function(join_sections){
 
 
 #' sql_to_dplyr
-#' @include decoupe.R
+#' @include split_code.R
 #' @param code_sql : chaine de charactère code SQL
 #'
 #' @return chaine de charactere

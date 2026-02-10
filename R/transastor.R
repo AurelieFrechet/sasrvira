@@ -35,14 +35,14 @@ transastor <- function(sas_code) {
     gsub2(pattern = "run\\s?;",  replacement = "run;") |>
     gsub2(pattern = "quit\\s?;", replacement = "quit;")
 
-  code_decoupe <- split_sas_code(sas_code)
+  splitted_code <- split_sas_code(sas_code)
 
-  if (length(code_decoupe$block_id) > 0) {
-    code_decoupe$traduction <- lapply(
-      X = 1:length(code_decoupe$block_id),
+  if (length(splitted_code$block_id) > 0) {
+    splitted_code$traduction <- lapply(
+      X = 1:length(splitted_code$block_id),
       FUN = function(i) {
-        id   = code_decoupe$block_id[i]
-        code = code_decoupe$text[i]
+        id   = splitted_code$block_id[i]
+        code = splitted_code$text[i]
         switch(
           tolower(id),
           "proc sql" = {
@@ -58,11 +58,12 @@ transastor <- function(sas_code) {
       }
     ) |> unlist()
 
-# TODO: REMOVE f*cking dependencies
-    stringi::stri_sub_all(str = sas_code,
-                          from = code_decoupe$locations$start,
-                          to = code_decoupe$locations$end) <-
-      code_decoupe$traduction
+    # TODO: REMOVE f*cking dependencies
+    stringi::stri_sub_all(
+      str  = sas_code,
+      from = splitted_code$locations$start,
+      to   = splitted_code$locations$end
+    ) <- splitted_code$traduction
   }
 
 

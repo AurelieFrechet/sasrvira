@@ -66,18 +66,18 @@ test_that("Cas avec le mot clé contenu dans un mot", {
   expect_null(sentence)
 })
 
-# decouper_SAS ------------------------------------------------------------
+# split_sas_code ------------------------------------------------------------
 
 
 
 test_that("decoupe sas - Code non reconnu", {
   sas_code     <- "Ceci n'est pas du code SAS"
-  code_decoupe <- decouper_SAS(sas_code)
+  code_decoupe <- split_sas_code(sas_code)
   expect_length(code_decoupe, 3) # liste de taille 3
-  expect_equal(names(code_decoupe), c("place", "texte", "id"))
-  expect_length(code_decoupe$place, 0)
-  expect_length(code_decoupe$texte, 0)
-  expect_length(code_decoupe$id, 0)
+  expect_equal(names(code_decoupe), c("locations", "text", "block_id"))
+  expect_length(code_decoupe$locations, 0)
+  expect_length(code_decoupe$text, 0)
+  expect_length(code_decoupe$block_id, 0)
 })
 
 
@@ -90,18 +90,18 @@ test_that("decoupe sas - Commentaires", {
   multilignes*/
   *Ceci est une ligne ;
   Ceci n'est pas un commentaire * "
-  code_decoupe <- decouper_SAS(sas_code)
+  code_decoupe <- split_sas_code(sas_code)
   expect_length(code_decoupe, 3) # liste de taille 3
-  expect_equal(names(code_decoupe), c("place", "texte", "id"))
+  expect_equal(names(code_decoupe), c("locations", "text", "block_id"))
   expect_equal(
-    code_decoupe$texte,
+    code_decoupe$text,
     c(
       "Ceci est une ligne",
       "Ceci est un commentaire",
       "Ceci\n  est un\n  commentaire\n  multilignes"
     )
   )
-  expect_equal(code_decoupe$id, c("*;", "/**/", "/**/"))
+  expect_equal(code_decoupe$block_id, c("*;", "/**/", "/**/"))
 })
 
 
@@ -128,11 +128,11 @@ RUN;
 /*Ceci est encore un
 commentaire*/
 "
-  code_decoupe <- decouper_SAS(sas_code)
+  code_decoupe <- split_sas_code(sas_code)
   expect_length(code_decoupe, 3) # liste de taille 3
-  expect_equal(names(code_decoupe), c("place", "texte", "id"))
+  expect_equal(names(code_decoupe), c("locations", "text", "block_id"))
   expect_equal(
-    code_decoupe$texte,
+    code_decoupe$text,
     c(
       "data = table;",
       "data= table;\n  var age;",
@@ -143,5 +143,5 @@ commentaire*/
       "Ceci est encore un\ncommentaire"
     )
   )
-  expect_equal(code_decoupe$id, c("proc contents", "proc means", "proc freq", "data", "/**/", "/**/", "/**/"))
+  expect_equal(code_decoupe$block_id, c("proc contents", "proc means", "proc freq", "data", "/**/", "/**/", "/**/"))
 })

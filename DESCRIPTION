@@ -37,4 +37,4 @@ Collate:
     'sasr_import.R'
     'sasr_libname.R'
     'split_SAS_procedures.R'
-    'transcripteur.R'
+    'transastor.R'

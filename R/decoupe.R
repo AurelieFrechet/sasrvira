@@ -1,44 +1,48 @@
-#' Decoupe code SAS
+#' Split SAS code into logical blocks
 #'
+#' @description
+#' Identifies logical blocks in SAS code such as procedures, DATA steps,
+#' and comments (single-line and multi-line). Each block is extracted and
+#' its position in the original code is recorded.
 #'
-#' @description identifie les blocs de procédures/commentaires/étapes data/etc,
-#' les découpe et indique leur position dans le code d'origine
+#' @param sas_code Character string containing raw SAS code
+#'   (not pre-split by lines).
 #'
-#' @param sas_code : code SAS en entrée, non découpé par lignes
+#' @return
+#' A list with three elements:
+#' \itemize{
+#'   \item \code{place}: positions of extracted blocks in the original code
+#'   \item \code{texte}: extracted code blocks
+#'   \item \code{id}: identifier of each block (procedure name, comment type, etc.)
+#' }
 #'
-#' @return liste d'élements : place, texte et id
-#' place : localisation du code extrait
-#' texte : code extrait
-#' id : identifiant du code extrait, premier mot ou groupe de mot du bloc,
-#' identifiant la procédure ou le commentaire, etc.
 #' @export
-#'
-decouper_SAS <- function(sas_code) {
+split_sas_code <- function(sas_code) {
 
   # PROCEDURES : proc mot [...] run;/quit;
-  locate_proc <- locate_string(x = sas_code, pattern = "(proc \\w+)([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
-  match_proc  <-  match_multiple_string(x = sas_code, pattern = "(proc \\w+)([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
+  proc_locations <- locate_string(x = sas_code, pattern = "(proc \\w+)([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
+  proc_matches  <-  match_multiple_string(x = sas_code, pattern = "(proc \\w+)([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
 
   # ETAPES DATA : data [...] run;
-  locate_data <- locate_string(x = sas_code, pattern = "(data(?!.*=))([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
-  match_data  <- match_multiple_string(x = sas_code, pattern = "(data(?!.*=))([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
+  data_locations <- locate_string(x = sas_code, pattern = "(data(?!.*=))([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
+  data_matches  <- match_multiple_string(x = sas_code, pattern = "(data(?!.*=))([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
 
   # COMMENTAIRES 1 LIGNE
-  locate_c1 <- locate_string(x = sas_code, pattern = "\\n\\s+?\\*(.*?);\\n", ignore.case = T, perl = T)
-  match_c1  <- match_multiple_string(x = sas_code, pattern = "\\n\\s+?\\*(.*?);\\n", ignore.case = T, perl = T)
+  single_comment_locations <- locate_string(x = sas_code, pattern = "\\n\\s+?\\*(.*?);\\n", ignore.case = T, perl = T)
+  single_comment_matches  <- match_multiple_string(x = sas_code, pattern = "\\n\\s+?\\*(.*?);\\n", ignore.case = T, perl = T)
 
   # COMMENTAIRES MULTIGNES
-  locate_c2 <- locate_string(x = sas_code, pattern = "\\/\\*([\\s\\S]*?)\\*\\/", ignore.case = T, perl = T)
-  match_c2  <- match_multiple_string(x = sas_code, pattern = "\\/\\*([\\s\\S]*?)\\*\\/", ignore.case = T, perl = T)
+  multiline_comment_locations <- locate_string(x = sas_code, pattern = "\\/\\*([\\s\\S]*?)\\*\\/", ignore.case = T, perl = T)
+  multiline_comment_matches  <- match_multiple_string(x = sas_code, pattern = "\\/\\*([\\s\\S]*?)\\*\\/", ignore.case = T, perl = T)
 
   return(list(
-    place = rbind(locate_proc, locate_data, locate_c1, locate_c2),
-    texte = trimws(c(match_proc[[2]], match_data[[2]], match_c1[[1]], match_c2[[1]])),
-    id = c(
-      trimws(match_proc[[1]]),
-      if(is.null(locate_data)) NULL else rep("data", nrow(locate_data)),
-      if(is.null(locate_c1)) NULL else rep("*;",   nrow(locate_c1)),
-      if(is.null(locate_c2)) NULL else rep("/**/", nrow(locate_c2))
+    locations = rbind(proc_locations, data_locations, single_comment_locations, multiline_comment_locations),
+    text      = trimws(c(proc_matches[[2]], data_matches[[2]], single_comment_matches[[1]], multiline_comment_matches[[1]])),
+    block_id  = c(
+      trimws(proc_matches[[1]]),
+      if(is.null(data_locations)) NULL else rep("data", nrow(data_locations)),
+      if(is.null(single_comment_locations)) NULL else rep("*;",   nrow(single_comment_locations)),
+      if(is.null(multiline_comment_locations)) NULL else rep("/**/", nrow(multiline_comment_locations))
     )
   ))
 }

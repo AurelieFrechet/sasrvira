@@ -7,8 +7,6 @@
 #' and replaces the original code with its R equivalent.
 #'
 #' @param sas_code Character string containing SAS code.
-#' @param id Character string identifying the SAS procedure.
-#' @param code Character string containing the SAS procedure body.
 #'
 #' @return
 #' A character string containing translated R code.
@@ -16,7 +14,6 @@
 #' @importFrom stringi stri_sub_all
 #'
 #' @examples
-#' # Example SAS code (simplified)
 #' sas_code <- "
 #' proc means data=mydata;
 #' run;

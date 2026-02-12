@@ -20,12 +20,12 @@
 split_sas_code <- function(sas_code) {
 
   # PROCEDURES : proc mot [...] run;/quit;
-  proc_locations <- locate_string(x = sas_code, pattern = "(proc \\w+)([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
-  proc_matches  <-  match_multiple_string(x = sas_code, pattern = "(proc \\w+)([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
+  proc_locations <- locate_string(x = sas_code, pattern = "(\\bproc \\w+)([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
+  proc_matches  <-  match_multiple_string(x = sas_code, pattern = "(\\bproc \\w+)([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
 
   # ETAPES DATA : data [...] run;
-  data_locations <- locate_string(x = sas_code, pattern = "(data(?!.*=))([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
-  data_matches  <- match_multiple_string(x = sas_code, pattern = "(data(?!.*=))([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
+  data_locations <- locate_string(x = sas_code, pattern = "(\\bdata(?!.*=))([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
+  data_matches  <- match_multiple_string(x = sas_code, pattern = "(\\bdata(?!.*=))([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
 
   # COMMENTAIRES 1 LIGNE
   single_comment_locations <- locate_string(x = sas_code, pattern = "\\n\\s+?\\*(.*?);\\n", ignore.case = T, perl = T)

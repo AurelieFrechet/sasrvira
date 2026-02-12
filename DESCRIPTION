@@ -24,6 +24,7 @@ Collate:
     'class_ProcContents.R'
     'class_ProcMeans.R'
     'class_ProcPrint.R'
+    'split_code.R'
     'utils.R'
     'class_ProcSQL.R'
     'class_ProcSort.R'
@@ -35,5 +36,4 @@ Collate:
     'sasr_import.R'
     'sasr_libname.R'
     'split_SAS_procedures.R'
-    'split_code.R'
     'transastor.R'

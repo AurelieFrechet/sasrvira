@@ -8,10 +8,6 @@ transastor(sas_code)
 }
 \arguments{
 \item{sas_code}{Character string containing SAS code.}
-
-\item{id}{Character string identifying the SAS procedure.}
-
-\item{code}{Character string containing the SAS procedure body.}
 }
 \value{
 A character string containing translated R code.
@@ -23,7 +19,6 @@ dispatches each SAS procedure to the appropriate translator,
 and replaces the original code with its R equivalent.
 }
 \examples{
-# Example SAS code (simplified)
 sas_code <- "
 proc means data=mydata;
 run;

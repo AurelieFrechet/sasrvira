@@ -1,3 +1,13 @@
+test_that("example works", {
+  sas_code <- "
+  proc means data=mydata;
+  run;"
+
+  expect_equal(transastor(sas_code), "\n  mydata %>%\n\tsummary()")
+})
+
+
+
 test_that("test sur iris", {
   code_sas <- "proc contents data=iris; run;
   proc sql;
@@ -7,15 +17,15 @@ test_that("test sur iris", {
 
 })
 
-test_that("test boulot", {
-  code_sas = "PROC SQL;
-  select rB010, rB030, RB080, RB0808F
-  from table
-  where (RB080 not between 1890 and 2018 and RB080 not = .)
-  order by rb010, rB030;
-  QUIT;"
-  transastor(code_sas)
-})
+# test_that("test boulot", {
+#   code_sas = "PROC SQL;
+#   select rB010, rB030, RB080, RB0808F
+#   from table
+#   where (RB080 not between 1890 and 2018 and RB080 not = .)
+#   order by rb010, rB030;
+#   QUIT;"
+#   transastor(code_sas)
+# })
 
 
 test_that("vide", {

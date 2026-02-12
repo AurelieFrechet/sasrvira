@@ -68,6 +68,15 @@ test_that("Cas avec le mot clé contenu dans un mot", {
 
 # split_sas_code ------------------------------------------------------------
 
+test_that("example works", {
+  sas_code <- "
+  proc means data=mydata;
+  run;
+  "
+  test <- split_sas_code(sas_code)
+  expect_length(test$text, 1)
+  expect_equal(test$text, "data=mydata;")
+})
 
 
 test_that("decoupe sas - Code non reconnu", {

@@ -27,10 +27,4 @@ A character string representing a function call.
 Utility functions to build character strings representing common
 R function calls applied to a given content.
 }
-\examples{
-paste_function("mean", "x")
-paste_str("my_object")
-paste_summary("my_object")
-paste_table("my_vector")
-}
 \keyword{internal}

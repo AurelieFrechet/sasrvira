@@ -10,12 +10,6 @@
 #' @return A character string representing a function call.
 #'
 #' @keywords internal
-#'
-#' @examples
-#' paste_function("mean", "x")
-#' paste_str("my_object")
-#' paste_summary("my_object")
-#' paste_table("my_vector")
 paste_function <- function(function_name, content) {
   paste0(function_name, "(", content, ")")
 }

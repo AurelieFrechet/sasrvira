@@ -55,12 +55,12 @@ ProcSQL <- S7::new_class(
 
 get_alias <- function(segment_table){
   if (grepl(x = segment_table, pattern = "\\bas\\b")) {
-    alias_table <- match_multiple_string(segment_table,
+    alias_table <- regex_match_groups(segment_table,
                                          pattern = "[\\S]+\\sas\\s([\\S]+)")[[1]]
 
   } else {
-    if (count_string(x = segment_table, pattern = "\\w+") == 2) {
-      alias_table <- match_multiple_string(segment_table,
+    if (regex_count_matches(x = segment_table, pattern = "\\w+") == 2) {
+      alias_table <- regex_match_groups(segment_table,
                                            pattern = "[\\S]+\\s([\\S]+)")[[1]]
 
     } else {
@@ -72,12 +72,12 @@ get_alias <- function(segment_table){
 
 get_table <- function(segment_table){
   if (grepl(x = segment_table, pattern = "\\bas\\b")) {
-    nom_table <- match_multiple_string(segment_table,
+    nom_table <- regex_match_groups(segment_table,
                                        pattern = "([\\S]+)\\sas\\s[\\S]+")[[1]]
 
   } else {
-    if (count_string(x = segment_table, pattern = "[\\S]+") == 2) {
-      nom_table <- match_multiple_string(segment_table,
+    if (regex_count_matches(x = segment_table, pattern = "[\\S]+") == 2) {
+      nom_table <- regex_match_groups(segment_table,
                                          pattern = "([\\S]+)\\s[\\S]+")[[1]]
 
     } else {
@@ -88,7 +88,7 @@ get_table <- function(segment_table){
 }
 
 extract_table_name <- function(from_section){
-  table_info <- match_multiple_string(from_section,
+  table_info <- regex_match_groups(from_section,
                                       pattern = "([\\S]+)(\\sas)?(\\s[\\S]+)?")
   table_name <- table_info[[1]]
   table_alias <- trimws(table_info[[3]])
@@ -219,7 +219,7 @@ extract_joins <- function(join_sections){
   is_join_on <- grepl(x = join_expression, pattern = "\\bon\\b", ignore.case = T)
 
   lapply(seq_along(join_section), function(i){
-    join_type <- match_multiple_string(join_sections$key_word[i], pattern = "^(\\w+)")
+    join_type <- regex_match_groups(join_sections$key_word[i], pattern = "^(\\w+)")
 
   })
 
@@ -232,12 +232,12 @@ extract_joins <- function(join_sections){
     conditions_jointures  <- sapply(jointures, function(i) i[2])
   } else {
     tables_jointures      <- join_expression |> unlist()
-    conditions_jointures  <- match_multiple_string(
+    conditions_jointures  <- regex_match_groups(
       sentence$text[grepl(x = sentence$key_word, pattern = "where")],
       pattern = "(\\w+\\.\\w+\\s*=\\s*\\w+\\.\\w++)"
     ) |>
       unlist()
-    sentence$text[grepl(x = sentence$key_word, pattern = "where")] <- remove_string(
+    sentence$text[grepl(x = sentence$key_word, pattern = "where")] <- regex_remove(
       sentence$text[grepl(x = sentence$key_word, pattern = "where")],
       pattern = "\\w+\\.\\w+\\s*=\\s*\\w+\\.\\w++"
     )
@@ -267,7 +267,7 @@ sql_to_dplyr <- function(code_sql) {
   dplyr_join    <- NA
   affectation   <- NA
 
-  code_sql <- remove_string(code_sql, ";")
+  code_sql <- regex_remove(code_sql, ";")
   # Initialisation
   sentence <- split_sql_query(code_sql,
                               keywords = c("select",
@@ -303,7 +303,7 @@ sql_to_dplyr <- function(code_sql) {
   # CREATE TABLE ----
   if (any(sentence$key_word == "create table")) {
     lecture <- sentence$text[(sentence$key_word == "create table")] |>
-      match_multiple_string(pattern = "([\\S]+)\\s(as|like)?(\\s[\\S]+)?", ignore.case = T)
+      regex_match_groups(pattern = "([\\S]+)\\s(as|like)?(\\s[\\S]+)?", ignore.case = T)
 
     nom_table <-  lecture[[1]]
     table_like <- ifelse(lecture[[3]] == "", NA, lecture[[3]])
@@ -324,7 +324,7 @@ sql_to_dplyr <- function(code_sql) {
     join_expression <- sentence$text[grepl(x = sentence$key_word, pattern = "join")]
     nom_jointures   <- sentence$key_word[grepl(x = sentence$key_word, pattern = "join")]|>
       tolower() |>
-      gsub2(pattern = "\\s+", "_")
+      regex_replace(pattern = "\\s+", "_")
 
     # If there is no ON => WHERE
     if (any(grepl(x = join_expression, pattern = "\\bon\\b", ignore.case = T))) {
@@ -335,12 +335,12 @@ sql_to_dplyr <- function(code_sql) {
       conditions_jointures  <- sapply(jointures, function(i) i[2])
     } else {
       tables_jointures      <- join_expression |> unlist()
-      conditions_jointures  <- match_multiple_string(
+      conditions_jointures  <- regex_match_groups(
         sentence$text[grepl(x = sentence$key_word, pattern = "where")],
         pattern = "(\\w+\\.\\w+\\s*=\\s*\\w+\\.\\w++)"
       ) |>
         unlist()
-      sentence$text[grepl(x = sentence$key_word, pattern = "where")] <- remove_string(
+      sentence$text[grepl(x = sentence$key_word, pattern = "where")] <- regex_remove(
         sentence$text[grepl(x = sentence$key_word, pattern = "where")],
         pattern = "\\w+\\.\\w+\\s*=\\s*\\w+\\.\\w++"
       )
@@ -417,14 +417,14 @@ sql_to_dplyr <- function(code_sql) {
     # Détecter les prefixes et les supprimer
     # Note : choix de tout supprimer peut-être à revoire plus tard
     dplyr_select <- sentence$text[(sentence$key_word == "select")] |>
-      remove_string(pattern = "\\w+\\.") |>
+      regex_remove(pattern = "\\w+\\.") |>
       sql_dplyr_select()
   }
 
   # ORDER BY ----
   if (any(sentence$key_word == "order by")) {
     dplyr_arrange <- sentence$text[(sentence$key_word == "order by")] |>
-      gsub2(pattern = "([\\S]+)\\sdesc", replacement = "-\\1", ignore.case = T)
+      regex_replace(pattern = "([\\S]+)\\sdesc", replacement = "-\\1", ignore.case = T)
     dplyr_arrange <- paste0("arrange(", dplyr_arrange , ")")
   }
 
@@ -447,11 +447,11 @@ sql_to_dplyr <- function(code_sql) {
 
 S7::method(transpile, ProcSQL) <- function(x) {
   requetes <- x@source |>
-    remove_string(pattern = "proc\\s+sql\\s*;", ignore.case = T) |>
-    remove_string(pattern = "quit\\s*;", ignore.case = T) |>
+    regex_remove(pattern = "proc\\s+sql\\s*;", ignore.case = T) |>
+    regex_remove(pattern = "quit\\s*;", ignore.case = T) |>
     strsplit(split = ";", perl = T) |>
     unlist() |>
-    gsub2(pattern = "\n", " ") |>
+    regex_replace(pattern = "\n", " ") |>
     trimws()
 
   requetes <- requetes[-which(requetes == "")]

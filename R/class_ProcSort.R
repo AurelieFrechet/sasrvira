@@ -66,10 +66,10 @@ ProcSort <- S7::new_class(
   ),
   constructor = function(sas_code) {
     code_net <- sas_code |>
-      remove_string(pattern  = "proc\\s*sort\\s", ignore.case = T) |>
-      remove_string(pattern  = "run\\s*;", ignore.case = T) |>
-      remove_string(pattern  = ";") |>
-      gsub2(pattern = "\n|=|\\s+", replacement = " ") |>
+      regex_remove(pattern  = "proc\\s*sort\\s", ignore.case = T) |>
+      regex_remove(pattern  = "run\\s*;", ignore.case = T) |>
+      regex_remove(pattern  = ";") |>
+      regex_replace(pattern = "\n|=|\\s+", replacement = " ") |>
       split_sql_query(
         keywords = c(
           "data",
@@ -78,7 +78,7 @@ ProcSort <- S7::new_class(
       )
 
     by_arg <- code_net$text[(code_net$key_word == "by")] |>
-    gsub2( pattern = "descending\\s+?", replacement = "descending-", ignore.case = T) |>
+    regex_replace( pattern = "descending\\s+?", replacement = "descending-", ignore.case = T) |>
       splitws()
 
 
@@ -92,7 +92,7 @@ ProcSort <- S7::new_class(
 
 S7::method(transpile, ProcSort) <- function(x) {
   sort_by <- x@ps_by |>
-    gsub2(pattern = "descending-([0-9a-zA-Z._]+)", replacement = "desc(\\1)")
+    regex_replace(pattern = "descending-([0-9a-zA-Z._]+)", replacement = "desc(\\1)")
 
   dplyr_groupby <- paste_function(function_name = "arrange",
                                   content = paste(sort_by, collapse = ", "))
@@ -100,7 +100,7 @@ S7::method(transpile, ProcSort) <- function(x) {
   requete_dplyr <- paste(c(x@proc_data, dplyr_groupby), collapse = " %>%\n\t")
 
   out_table <- x@proc_options[grepl(pattern = "out=", x = x@proc_options)]|>
-    remove_string(pattern  = "out=", ignore.case = T)
+    regex_remove(pattern  = "out=", ignore.case = T)
 
 
   if(!identical(out_table, character(0))) {

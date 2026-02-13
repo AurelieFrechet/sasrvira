@@ -89,10 +89,10 @@ ProcMeans <- S7::new_class(
 
   constructor = function(sas_code) {
     code_net <- sas_code |>
-      remove_string(pattern  = "proc\\s*means\\s", ignore.case = T) |>
-      remove_string(pattern  = "run\\s*;", ignore.case = T) |>
-      remove_string(pattern  = ";") |>
-      gsub2(pattern = "\n|=|\\s+", replacement = " ") |>
+      regex_remove(pattern  = "proc\\s*means\\s", ignore.case = T) |>
+      regex_remove(pattern  = "run\\s*;", ignore.case = T) |>
+      regex_remove(pattern  = ";") |>
+      regex_replace(pattern = "\n|=|\\s+", replacement = " ") |>
       split_sql_query(
         keywords = c(
           "data",
@@ -169,7 +169,7 @@ S7::method(transpile, ProcMeans) <- function(x) {
     ## If only one VAR, no select()
     if ((nb_vars == 1 & is_default_stats) | more_than_1_var) {
       dplyr_select <- x@pm_var |>
-        gsub2(pattern = "-", replacement = ":")
+        regex_replace(pattern = "-", replacement = ":")
 
       dplyr_select <- paste_function("select", paste(dplyr_select, collapse = ", "))
     }

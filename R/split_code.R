@@ -20,20 +20,20 @@
 split_sas_code <- function(sas_code) {
 
   # PROCEDURES : proc mot [...] run;/quit;
-  proc_locations <- locate_string(x = sas_code, pattern = "(\\bproc \\w+)([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
-  proc_matches  <-  match_multiple_string(x = sas_code, pattern = "(\\bproc \\w+)([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
+  proc_locations <- regex_locate_matches(x = sas_code, pattern = "(\\bproc \\w+)([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
+  proc_matches  <-  regex_match_groups(x = sas_code, pattern = "(\\bproc \\w+)([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
 
   # ETAPES DATA : data [...] run;
-  data_locations <- locate_string(x = sas_code, pattern = "(\\bdata(?!.*=))([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
-  data_matches  <- match_multiple_string(x = sas_code, pattern = "(\\bdata(?!.*=))([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
+  data_locations <- regex_locate_matches(x = sas_code, pattern = "(\\bdata(?!.*=))([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
+  data_matches  <- regex_match_groups(x = sas_code, pattern = "(\\bdata(?!.*=))([\\s\\S]*?)(run;|quit;)", ignore.case = T, perl = T)
 
   # COMMENTAIRES 1 LIGNE
-  single_comment_locations <- locate_string(x = sas_code, pattern = "\\n\\s+?\\*(.*?);\\n", ignore.case = T, perl = T)
-  single_comment_matches  <- match_multiple_string(x = sas_code, pattern = "\\n\\s+?\\*(.*?);\\n", ignore.case = T, perl = T)
+  single_comment_locations <- regex_locate_matches(x = sas_code, pattern = "\\n\\s+?\\*(.*?);\\n", ignore.case = T, perl = T)
+  single_comment_matches  <- regex_match_groups(x = sas_code, pattern = "\\n\\s+?\\*(.*?);\\n", ignore.case = T, perl = T)
 
   # COMMENTAIRES MULTIGNES
-  multiline_comment_locations <- locate_string(x = sas_code, pattern = "\\/\\*([\\s\\S]*?)\\*\\/", ignore.case = T, perl = T)
-  multiline_comment_matches  <- match_multiple_string(x = sas_code, pattern = "\\/\\*([\\s\\S]*?)\\*\\/", ignore.case = T, perl = T)
+  multiline_comment_locations <- regex_locate_matches(x = sas_code, pattern = "\\/\\*([\\s\\S]*?)\\*\\/", ignore.case = T, perl = T)
+  multiline_comment_matches  <- regex_match_groups(x = sas_code, pattern = "\\/\\*([\\s\\S]*?)\\*\\/", ignore.case = T, perl = T)
 
   return(list(
     locations = rbind(proc_locations, data_locations, single_comment_locations, multiline_comment_locations),

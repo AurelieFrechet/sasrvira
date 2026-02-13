@@ -25,12 +25,12 @@
 transastor <- function(sas_code) {
   # TODO : Suppression des options non transcriptibles en R
   sas_code <- sas_code |>
-    remove_string(pattern = "noprint", ignore.case = T)
+    regex_remove(pattern = "noprint", ignore.case = T)
   # sas_code <- readLines(input, encoding = "UTF-8", warn=FALSE) |>
   #   paste(., collapse = "\n") |>
   sas_code <-  sas_code |>
-    gsub2(pattern = "run\\s?;",  replacement = "run;") |>
-    gsub2(pattern = "quit\\s?;", replacement = "quit;")
+    regex_replace(pattern = "run\\s?;",  replacement = "run;") |>
+    regex_replace(pattern = "quit\\s?;", replacement = "quit;")
 
   splitted_code <- split_sas_code(sas_code)
 

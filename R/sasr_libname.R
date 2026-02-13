@@ -11,7 +11,7 @@ sasr_libname <- function(sas_code) {
     # Transformation des \ en /
     transform_path() |>
     # Identification du nom de la librarie et du chemin assosié
-    match_multiple_string(pattern = "libname (\\w+) ([\"'][\\S]+[\"'])")
+    regex_match_groups(pattern = "libname (\\w+) ([\"'][\\S]+[\"'])")
 
   # Gestion des options ?
 

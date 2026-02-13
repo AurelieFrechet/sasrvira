@@ -37,3 +37,4 @@ Collate:
     'sasr_libname.R'
     'split_SAS_procedures.R'
     'transastor.R'
+    'utils_regex.R'

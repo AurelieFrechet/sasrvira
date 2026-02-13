@@ -11,13 +11,13 @@ sasr_data <- function(sas_code){
   where             <- NA
 
   # data lib.table;
-  data_table <- match_multiple_string(sas_code, pattern   = "^data (\\w+\\.)?(\\w+) ?;")
+  data_table <- regex_match_groups(sas_code, pattern   = "^data (\\w+\\.)?(\\w+) ?;")
 
   # <set lib.table;>
-  set_table <- match_multiple_string(x = sas_code, pattern   = "^set (\\w+\\.)?(\\w+) ?;")
+  set_table <- regex_match_groups(x = sas_code, pattern   = "^set (\\w+\\.)?(\\w+) ?;")
 
   # var = contenu;
-  variables_brut <- match_multiple_string(sas_code, pattern   = "^(\\w+) ?= ?(\\w+) ?;", )
+  variables_brut <- regex_match_groups(sas_code, pattern   = "^(\\w+) ?= ?(\\w+) ?;", )
 
   # <length var format;>
   length_variables

@@ -9,18 +9,25 @@
 \alias{regex_locate_matches}
 \title{String and regular expression utility functions}
 \usage{
-regex_remove(x, pattern, ignore.case = F, perl = T, ...)
+regex_remove(x, pattern, ignore.case = FALSE, perl = TRUE, ...)
 
-regex_replace(x, pattern, replacement, ignore.case = T, perl = T, ...)
+regex_replace(x, pattern, replacement, ignore.case = TRUE, perl = TRUE, ...)
 
-regex_match_groups(x, pattern, n_groups = NULL, ignore.case = T, perl = T, ...)
+regex_match_groups(
+  x,
+  pattern,
+  n_groups = NULL,
+  ignore.case = TRUE,
+  perl = TRUE,
+  ...
+)
 
-regex_count_matches(x, pattern, ignore.case = T, perl = T, ...)
+regex_count_matches(x, pattern, ignore.case = TRUE, perl = TRUE, ...)
 
-regex_locate_matches(x, pattern, ignore.case = T, perl = T, ...)
+regex_locate_matches(x, pattern, ignore.case = TRUE, perl = TRUE, ...)
 }
 \arguments{
-\item{x}{Character string to process.}
+\item{x}{Character vector to process.}
 
 \item{pattern}{Regular expression pattern.}
 
@@ -38,10 +45,12 @@ regex_locate_matches(x, pattern, ignore.case = T, perl = T, ...)
 }
 \value{
 Depending on the function:
+Depending on the function:
 \itemize{
-  \item modified character strings
-  \item lists of matched groups
-  \item data frames with match positions
+  \item a character vector
+  \item a list of character vectors (one per capture group)
+  \item an integer count
+  \item a data frame with match start and end positions
 }
 }
 \description{

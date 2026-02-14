@@ -8,9 +8,9 @@ split_SAS_procedures <- function(text) {
   t1 <- text |>
     tolower() |>
     trimws() |>
-    gsub2(pattern = "run\\s?;", replacement = "run;") |>
-    gsub2(pattern = "quit\\s?;", replacement = "quit;") |>
-    gsub2(pattern = "\\s+", replacement = " ") |>
+    regex_replace(pattern = "run\\s?;", replacement = "run;") |>
+    regex_replace(pattern = "quit\\s?;", replacement = "quit;") |>
+    regex_replace(pattern = "\\s+", replacement = " ") |>
     strsplit('(?=\\s(proc \\w+))|(?<=run;)|(?=\\s(data \\w+))|(?<=quit;)',
              perl = T) |>
     unlist() |>

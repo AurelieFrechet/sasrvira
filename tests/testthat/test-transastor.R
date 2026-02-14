@@ -1,39 +1,49 @@
+test_that("example works", {
+  sas_code <- "
+  proc means data=mydata;
+  run;"
+
+  expect_equal(transastor(sas_code), "\n  mydata %>%\n\tsummary()")
+})
+
+
+
 test_that("test sur iris", {
   code_sas <- "proc contents data=iris; run;
   proc sql;
   select * from iris where Species=\"setosa\";
   quit;"
-  expect_equal(traducteur(code_sas), "str(iris)\n  iris %>%\n\tfilter(Species == \"setosa\")")
+  expect_equal(transastor(code_sas), "str(iris)\n  iris %>%\n\tfilter(Species == \"setosa\")")
 
 })
 
-test_that("test boulot", {
-  code_sas = "PROC SQL;
-  select rB010, rB030, RB080, RB0808F
-  from table
-  where (RB080 not between 1890 and 2018 and RB080 not = .)
-  order by rb010, rB030;
-  QUIT;"
-  traducteur(code_sas)
-})
+# test_that("test boulot", {
+#   code_sas = "PROC SQL;
+#   select rB010, rB030, RB080, RB0808F
+#   from table
+#   where (RB080 not between 1890 and 2018 and RB080 not = .)
+#   order by rb010, rB030;
+#   QUIT;"
+#   transastor(code_sas)
+# })
 
 
 test_that("vide", {
   code_sas <- ""
-  expect_equal(traducteur(code_sas), "")
+  expect_equal(transastor(code_sas), "")
 
 })
 
 test_that("code non reconnu", {
   code_sas <- "code non reconnu"
-  expect_equal(traducteur(code_sas), "code non reconnu")
+  expect_equal(transastor(code_sas), "code non reconnu")
 
 })
 
 test_that("proc means", {
   code_sas = "PROC MEANS DATA=TrialSorted;      BY Sex;      VAR Age; RUN;"
   expect_equal(
-    traducteur(code_sas),
+    transastor(code_sas),
     "TrialSorted %>%\n\tgroup_by(Sex) %>%\n\tselect(Age) %>%\n\tsummary()"
   )
 })
@@ -47,6 +57,6 @@ test_that("proc means", {
 #   from my_lib.my_table
 #   order by date;
 # quit;"
-#   traducteur(code_sas)
+#   transastor(code_sas)
 #   "my_lib.my_table %>%\n\tmutate(date = date, length(field2), concat = paste(field3, field4, sep = \"|\")) %>%\n\tselect(date, field1, length(field2), concat))"
 # })

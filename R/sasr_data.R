@@ -1,4 +1,4 @@
-sasr_data <- function(code_sas){
+sasr_data <- function(sas_code){
   # Déclaration des variables
   data_table        <- NA
   set_table         <- NA
@@ -11,13 +11,13 @@ sasr_data <- function(code_sas){
   where             <- NA
 
   # data lib.table;
-  data_table <- match_multiple_string(code_sas, pattern   = "^data (\\w+\\.)?(\\w+) ?;")
+  data_table <- regex_match_groups(sas_code, pattern   = "^data (\\w+\\.)?(\\w+) ?;")
 
   # <set lib.table;>
-  set_table <- match_multiple_string(x = code_sas, pattern   = "^set (\\w+\\.)?(\\w+) ?;")
+  set_table <- regex_match_groups(x = sas_code, pattern   = "^set (\\w+\\.)?(\\w+) ?;")
 
   # var = contenu;
-  variables_brut <- match_multiple_string(code_sas, pattern   = "^(\\w+) ?= ?(\\w+) ?;", )
+  variables_brut <- regex_match_groups(sas_code, pattern   = "^(\\w+) ?= ?(\\w+) ?;", )
 
   # <length var format;>
   length_variables

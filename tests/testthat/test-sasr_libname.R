@@ -1,6 +1,6 @@
 test_that("Conversion libname simple", {
-  code_sas = "libname librairie \"C:\\Users\\chemin\\dossier\""
-  expect_equal(sasr_libname(code_sas),
+  sas_code = "libname librairie \"C:\\Users\\chemin\\dossier\""
+  expect_equal(sasr_libname(sas_code),
   "librairie <- \"C:/Users/chemin/dossier\"")
 })
 

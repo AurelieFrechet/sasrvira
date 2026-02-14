@@ -4,10 +4,10 @@
 \alias{sasr_libname}
 \title{sasr_libname}
 \usage{
-sasr_libname(code_sas)
+sasr_libname(sas_code)
 }
 \arguments{
-\item{code_sas}{code en entrée contenant le libname}
+\item{sas_code}{code en entrée contenant le libname}
 }
 \value{
 expression R associée

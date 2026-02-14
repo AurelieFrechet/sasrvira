@@ -87,13 +87,13 @@ ProcMeans <- S7::new_class(
     pm_output  = S7::class_list
   ),
 
-  constructor = function(code_sas) {
-    code_net <- code_sas |>
-      remove_string(pattern  = "proc\\s*means\\s", ignore.case = T) |>
-      remove_string(pattern  = "run\\s*;", ignore.case = T) |>
-      remove_string(pattern  = ";") |>
-      gsub2(pattern = "\n|=|\\s+", replacement = " ") |>
-      decoupe_requete(
+  constructor = function(sas_code) {
+    code_net <- sas_code |>
+      regex_remove(pattern  = "proc\\s*means\\s", ignore.case = T) |>
+      regex_remove(pattern  = "run\\s*;", ignore.case = T) |>
+      regex_remove(pattern  = ";") |>
+      regex_replace(pattern = "\n|=|\\s+", replacement = " ") |>
+      split_sql_query(
         keywords = c(
           "data",
           "var",
@@ -116,8 +116,8 @@ ProcMeans <- S7::new_class(
 
     ## Output as a list
     if(!identical(.extract_args("output"), character(0))){
-      output <- decoupe_requete(
-        requete = code_net$text[(code_net$key_word == "output")],
+      output <- split_sql_query(
+        query = code_net$text[(code_net$key_word == "output")],
         keywords = c("out", "n", "mean", "std", "skewness", "kurtosis") # TODO  préparer un vecteur de mots clés
       )
       output_list <- as.list(output$text)
@@ -130,7 +130,7 @@ ProcMeans <- S7::new_class(
 
 
     new_object(
-      .parent = ProcSAS(code_sas = code_sas),
+      .parent = ProcSAS(sas_code = sas_code),
       pm_var     = .extract_args("var"),
       pm_by      = .extract_args("by"),
       pm_class   = .extract_args("class"),
@@ -169,7 +169,7 @@ S7::method(transpile, ProcMeans) <- function(x) {
     ## If only one VAR, no select()
     if ((nb_vars == 1 & is_default_stats) | more_than_1_var) {
       dplyr_select <- x@pm_var |>
-        gsub2(pattern = "-", replacement = ":")
+        regex_replace(pattern = "-", replacement = ":")
 
       dplyr_select <- paste_function("select", paste(dplyr_select, collapse = ", "))
     }

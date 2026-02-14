@@ -4,7 +4,7 @@
 \alias{ProcSort}
 \title{Parsed Representation of a SAS PROC SORT Statement}
 \usage{
-ProcSort(code_sas)
+ProcSort(sas_code)
 }
 \description{
 `ProcSort` is an S7 class representing a parsed SAS `PROC SORT`

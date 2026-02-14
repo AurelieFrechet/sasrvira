@@ -2,14 +2,21 @@
 % Please edit documentation in R/utils.R
 \name{data_equal_to}
 \alias{data_equal_to}
-\title{data_equal_to}
+\title{Extract DATA= target from SAS code}
 \usage{
-data_equal_to(code_sas)
+data_equal_to(sas_code)
 }
 \arguments{
-\item{code_sas}{character: code sas}
+\item{sas_code}{Character string containing SAS code.}
+}
+\value{
+A character string representing the dataset name. If a SAS library is
+specified, the result is a \code{file.path()} call combining the library
+and dataset name.
 }
 \description{
-detecte la valeur da data et la renvoie, contenur dans une
-fonction file.path si elle est associée à une librairie SAS
+Detects the value assigned to a SAS \code{DATA=} statement and returns it.
+If the dataset is qualified with a SAS library (e.g. \code{lib.dataset}),
+it is converted into an R-compatible \code{file.path()} expression.
 }
+\keyword{internal}

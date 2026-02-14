@@ -4,7 +4,7 @@
 \alias{ProcPrint}
 \title{Parsed Representation of a SAS PROC PRINT Statement}
 \usage{
-ProcPrint(code_sas)
+ProcPrint(sas_code)
 }
 \description{
 `ProcPrint` is an S7 class representing a parsed SAS `PROC PRINT`

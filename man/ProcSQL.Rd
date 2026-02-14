@@ -4,7 +4,7 @@
 \alias{ProcSQL}
 \title{Parsed Representation of a SAS PROC SQL Statement}
 \usage{
-ProcSQL(code_sas)
+ProcSQL(sas_code)
 }
 \description{
 `ProcSQL` is an S7 class representing a parsed SAS `PROC SQL`

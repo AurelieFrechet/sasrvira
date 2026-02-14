@@ -1,6 +1,6 @@
 
 
-# decoupe_requete --------------------------------------------------------
+# split_sql_query --------------------------------------------------------
 
 test_that("decoupe sql - Cas normal", {
   code_sql <- "select a, b
@@ -10,7 +10,7 @@ test_that("decoupe sql - Cas normal", {
           group by a
           having count(*)>1
           order by a, b"
-  sentence <- decoupe_requete(requete = code_sql,
+  sentence <- split_sql_query(query = code_sql,
                               keywords = c("select", "from", "join","where", "group by", "having", "order by", "limit"))
   expect_length(sentence, 2)
   expect_length(sentence$key_word, 7)
@@ -24,7 +24,7 @@ test_that("decoupe sql - Cas normal", {
 
 test_that("decoupe sql - Ignore CASE", {
   code_sql <- "SELECT * FROM table WHERE nom=\"Frechet\""
-  sentence <- decoupe_requete(code_sql,
+  sentence <- split_sql_query(code_sql,
                               keywords = c("select", "from", "where", "order by", "group by", "limit"))
   expect_length(sentence, 2)
   expect_length(sentence$key_word, 3)
@@ -39,20 +39,20 @@ test_that("decoupe sql - Ignore CASE", {
 
 test_that("decoupe sql - Cas vide", {
   code_sql <- "phrase qui n'a aucun rapport"
-  sentence <- decoupe_requete(code_sql,
+  sentence <- split_sql_query(code_sql,
                               keywords = c("select", "from", "where", "order by", "group by", "limit"))
   expect_null(sentence)
-  expect_message(decoupe_requete(
+  expect_message(split_sql_query(
     code_sql,
     keywords = c("select", "from", "where", "order by", "group by", "limit")
   ),
-  "Requete does not contain key words")
+  "Query does not contain key words")
 
 })
 
 test_that("first argument split", {
-  expect_no_error(sentence1 <- decoupe_requete(requete = "data sashelp.iris", keywords = c("data")))
-  expect_no_error(sentence2 <- decoupe_requete(requete = "   data sashelp.iris", keywords = c("data")))
+  expect_no_error(sentence1 <- split_sql_query(query = "data sashelp.iris", keywords = c("data")))
+  expect_no_error(sentence2 <- split_sql_query(query = "   data sashelp.iris", keywords = c("data")))
   expect_equal(sentence1$key_word, "data")
   expect_equal(sentence2$key_word, "data")
   expect_equal(sentence1$text, "sashelp.iris")
@@ -62,27 +62,36 @@ test_that("first argument split", {
 
 test_that("Cas avec le mot clé contenu dans un mot", {
   phrase <- "Ceci n'est pas une phrase à découper"
-  sentence <- decoupe_requete(requete = phrase, keywords = c("as", "e", "r", "C"))
+  sentence <- split_sql_query(query = phrase, keywords = c("as", "e", "r", "C"))
   expect_null(sentence)
 })
 
-# decouper_SAS ------------------------------------------------------------
+# split_sas_code ------------------------------------------------------------
 
+test_that("example works", {
+  sas_code <- "
+  proc means data=mydata;
+  run;
+  "
+  test <- split_sas_code(sas_code)
+  expect_length(test$text, 1)
+  expect_equal(test$text, "data=mydata;")
+})
 
 
 test_that("decoupe sas - Code non reconnu", {
-  code_sas     <- "Ceci n'est pas du code SAS"
-  code_decoupe <- decouper_SAS(code_sas)
+  sas_code     <- "Ceci n'est pas du code SAS"
+  code_decoupe <- split_sas_code(sas_code)
   expect_length(code_decoupe, 3) # liste de taille 3
-  expect_equal(names(code_decoupe), c("place", "texte", "id"))
-  expect_length(code_decoupe$place, 0)
-  expect_length(code_decoupe$texte, 0)
-  expect_length(code_decoupe$id, 0)
+  expect_equal(names(code_decoupe), c("locations", "text", "block_id"))
+  expect_length(code_decoupe$locations, 0)
+  expect_length(code_decoupe$text, 0)
+  expect_length(code_decoupe$block_id, 0)
 })
 
 
 test_that("decoupe sas - Commentaires", {
-  code_sas     <-
+  sas_code     <-
     "/*Ceci est un commentaire*/
   /*Ceci
   est un
@@ -90,23 +99,23 @@ test_that("decoupe sas - Commentaires", {
   multilignes*/
   *Ceci est une ligne ;
   Ceci n'est pas un commentaire * "
-  code_decoupe <- decouper_SAS(code_sas)
+  code_decoupe <- split_sas_code(sas_code)
   expect_length(code_decoupe, 3) # liste de taille 3
-  expect_equal(names(code_decoupe), c("place", "texte", "id"))
+  expect_equal(names(code_decoupe), c("locations", "text", "block_id"))
   expect_equal(
-    code_decoupe$texte,
+    code_decoupe$text,
     c(
       "Ceci est une ligne",
       "Ceci est un commentaire",
       "Ceci\n  est un\n  commentaire\n  multilignes"
     )
   )
-  expect_equal(code_decoupe$id, c("*;", "/**/", "/**/"))
+  expect_equal(code_decoupe$block_id, c("*;", "/**/", "/**/"))
 })
 
 
 test_that("decoupe sas - Procédures", {
-  code_sas     <-
+  sas_code     <-
     "proc contents data = table;
   run;
   proc means data= table;
@@ -128,11 +137,11 @@ RUN;
 /*Ceci est encore un
 commentaire*/
 "
-  code_decoupe <- decouper_SAS(code_sas)
+  code_decoupe <- split_sas_code(sas_code)
   expect_length(code_decoupe, 3) # liste de taille 3
-  expect_equal(names(code_decoupe), c("place", "texte", "id"))
+  expect_equal(names(code_decoupe), c("locations", "text", "block_id"))
   expect_equal(
-    code_decoupe$texte,
+    code_decoupe$text,
     c(
       "data = table;",
       "data= table;\n  var age;",
@@ -143,5 +152,5 @@ commentaire*/
       "Ceci est encore un\ncommentaire"
     )
   )
-  expect_equal(code_decoupe$id, c("proc contents", "proc means", "proc freq", "data", "/**/", "/**/", "/**/"))
+  expect_equal(code_decoupe$block_id, c("proc contents", "proc means", "proc freq", "data", "/**/", "/**/", "/**/"))
 })

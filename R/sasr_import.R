@@ -1,13 +1,13 @@
-sasr_import <- function(code_sas) {
-  code_net <- code_sas |>
-    remove_string(pattern = "proc\\s+import\\s+", ignore.case = T) |>
-    remove_string(pattern = "run\\s*;", ignore.case = T) |>
-    remove_string(pattern = ";") |>
-    gsub2(pattern = "\n", replacement = " ") |>
-    gsub2(pattern = "=", replacement = " ") |>
-    gsub2(pattern = "\\s+", replacement = " ") |>
-    decoupe_requete(
-      requete = _,
+sasr_import <- function(sas_code) {
+  code_net <- sas_code |>
+    regex_remove(pattern = "proc\\s+import\\s+", ignore.case = T) |>
+    regex_remove(pattern = "run\\s*;", ignore.case = T) |>
+    regex_remove(pattern = ";") |>
+    regex_replace(pattern = "\n", replacement = " ") |>
+    regex_replace(pattern = "=", replacement = " ") |>
+    regex_replace(pattern = "\\s+", replacement = " ") |>
+    split_sql_query(
+      query = _,
       keywords = c("datafile",
                     "table",
                     "out",

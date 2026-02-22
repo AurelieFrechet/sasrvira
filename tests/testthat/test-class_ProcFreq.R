@@ -1,3 +1,16 @@
+# Validator -------------------------------------------------
+test_that("OUTPUT and TABLES missmatch", {
+
+  sas_code <- "
+  proc freq data=mydata;
+    tables x;
+    output out= x y;
+  run;
+  "
+ expect_error(ProcFreq(sas_code), "The number of outputs in OUTPUT OUT= must match TABLES")
+})
+
+# Constructor -----------------------------------------------
 test_that("ProcFreq constructor parses PROC FREQ statements correctly", {
 
   sas_code <- "
@@ -26,7 +39,6 @@ test_that("ProcFreq constructor parses PROC FREQ statements correctly", {
 })
 
 
-
 test_that("ProcFreq handles missing optional statements", {
 
   sas_code <- "
@@ -48,6 +60,9 @@ test_that("ProcFreq handles missing optional statements", {
   test <- transpile(proc)
   expect_equal(test, "table(mydata$x)")
 })
+
+
+# Transpile -------------------------------------------------
 
 test_that("Multiple tables", {
   sas_code <- "proc freq data=Color;
@@ -93,13 +108,8 @@ test_that("pairs_tables A B  C",{
   expect_equal(pairs_tables("A*B C* D"), list(expand.grid("A", "B"), expand.grid("C", "D")))
 })
 
-# test_that("pairs_tables (A --C)",{
-#   expect_equal(pairs_tables("(A --C)"))
-#   expect_equal(pairs_tables("(A - - D)*C"))
-# })
 
-# tables_pairs (SAS documentations)------------------------------------------------------------
-
+# tables_pairs (SAS documentations)
 test_that("pairs_tables A*(B C)", {
   expect_equal(pairs_tables("A*(B C)"), list(expand.grid("A", c("B", "C"))))
 })
@@ -112,14 +122,8 @@ test_that("pairs_tables (A B C)*D",{
   expect_equal(pairs_tables("(A B C)*D"), list(expand.grid(c("A", "B", "C"), c("D"))))
 })
 
-# TODO: Aside for now
-# test_that("pairs_tables A - - C)",{
-#   expect_equal(pairs_tables("A - - C"), "A B C")
-# })
-#
-# test_that("pairs_tables (A - - C)*D",{
-#   expect_equal(pairs_tables("(A - - C)*D"), "A*D B*D C*D")
-# })
+
+
 
 
 # test_that("tables [...] / options", {

@@ -114,6 +114,11 @@ ProcFreq <- S7::new_class(
       pf_output  = output_args
 
     )
+  },
+  validator = function(self) {
+    if (length(self@pf_output) != 0 && length(self@pf_tables) != length(self@pf_output)) {
+      "The number of outputs in OUTPUT OUT= must match TABLES"
+    }
   }
 )
 

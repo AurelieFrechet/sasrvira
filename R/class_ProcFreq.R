@@ -73,7 +73,7 @@ ProcFreq <- S7::new_class(
   properties = list(
     pf_by      = S7::class_character,
     pf_exact   = S7::class_character,
-    pf_tables  = S7::class_character,
+    pf_tables  = S7::class_list,
     pf_test    = S7::class_character,
     pf_weight  = S7::class_character,
     pf_output  = S7::class_character
@@ -108,7 +108,7 @@ ProcFreq <- S7::new_class(
       .parent = ProcSAS(sas_code = sas_code),
       pf_by      = .extract_args("by"),
       pf_exact   = .extract_args("exact"),
-      pf_tables  = .extract_args("tables"),
+      pf_tables  = pairs_tables(code_net$text[(code_net$key_word == "tables")]),
       pf_test    = .extract_args("test"),
       pf_weight  = .extract_args("weight"),
       pf_output  = output_args
@@ -117,7 +117,34 @@ ProcFreq <- S7::new_class(
   }
 )
 
-text <- "VAR (A d)   *  (B  C)  Y sex*taille"
+
+# Method transpile --------------------------------------------------------
+
+S7::method(transpile, ProcFreq) <- function(x) {
+  ## Display ---- # TODO CrossTable
+  all_tables <- lapply(x@pf_tables, function(table){
+    m_tables <- table |>
+      as.matrix()
+    m_tables[] <- paste0(x@proc_data, "$", m_tables)
+    apply(m_tables, 1, paste, collapse = ", ")
+  }) |>
+    unlist() |>
+    paste_function(function_name ="table", content = _)
+
+## Output ---- # TODO dplyr
+  if (!identical(x@pf_output, character(0))) {
+    all_tables <- paste0(x@pf_output," <- ", all_tables)
+  }
+
+  all_tables <- paste(all_tables, collapse = "\n")
+
+  return(all_tables)
+}
+
+
+
+# Specific utils ----------------------------------------------------------
+
 pairs_tables <- function(text) {
   text <- regex_replace(x = text,
                         pattern = "\\s+",

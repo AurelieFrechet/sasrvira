@@ -29,6 +29,7 @@ Collate:
     'utils.R'
     'class_ProcSQL.R'
     'class_ProcSort.R'
+    'list_available.R'
     'paste_functions.R'
     'sasr_data.R'
     'sasr_import.R'

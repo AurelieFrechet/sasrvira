@@ -34,7 +34,6 @@ Collate:
     'sasr_data.R'
     'sasr_import.R'
     'sasr_libname.R'
-    'split_SAS_procedures.R'
     'split_sas_args.R'
     'transastor.R'
     'transpile_expressions.R'

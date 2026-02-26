@@ -192,7 +192,7 @@ run;"
 
   expect_equal(
     transpile(test),
-    "grade %>%\n\tgroup_by(Status, Year) %>%\n\tsummary")
+    "grade %>%\n\tgroup_by(Status, Year) %>%\n\tsummary()")
 
 })
 

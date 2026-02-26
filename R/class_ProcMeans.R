@@ -89,35 +89,21 @@ ProcMeans <- S7::new_class(
 
   constructor = function(sas_code) {
     code_net <- sas_code |>
-      regex_remove(pattern  = "proc\\s*means\\s", ignore.case = T) |>
-      regex_remove(pattern  = "run\\s*;", ignore.case = T) |>
-      regex_remove(pattern  = ";") |>
-      regex_replace(pattern = "\n|=|\\s+", replacement = " ") |>
-      split_sql_query(
-        keywords = c(
-          "data",
-          "var",
-          "by",
-          "class",
-          "format",
-          "freq",
-          "id",
-          "types",
-          "weight",
-          "ways",
-          "output"
-        )
-      )
+      split_sas_args()
 
     .extract_args <- function(keyword){
-      splitws(code_net$text[(code_net$key_word == keyword)])
+      splitws(code_net[[keyword]])
     }
 
 
     ## Output as a list
-    if(!identical(.extract_args("output"), character(0))){
+    if(!is.null(code_net$output)){
+      code_output <- code_net$output |>
+        regex_replace(pattern = "=", replacement = " ") |>
+        regex_replace(pattern = "\\s+", replacement = " ")
+
       output <- split_sql_query(
-        query = code_net$text[(code_net$key_word == "output")],
+        query = code_output,
         keywords = c("out", "n", "mean", "std", "skewness", "kurtosis") # TODO  préparer un vecteur de mots clés
       )
       output_list <- as.list(output$text)

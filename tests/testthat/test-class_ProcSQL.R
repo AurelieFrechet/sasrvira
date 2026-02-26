@@ -91,7 +91,7 @@ test_that("sql_dplyr_select : calcul ", {
                "table %>%\n\tsummarize(mean(age))")
 })
 
-test_that("sql_dplyr_select : calcul avec nouvele var", {
+test_that("sql_dplyr_select : calcul avec nouvelle var", {
   code_sql <-
     "PROC SQL; select avg(age) as moy
      from table;
@@ -101,6 +101,17 @@ test_that("sql_dplyr_select : calcul avec nouvele var", {
                "table %>%\n\tsummarize(moy = mean(age))")
 })
 
+
+test_that("select * case", {
+  code_sql <-"PROC SQL;
+  SELECT * AS tabC
+  FROM tabA
+  LEFT JOIN tabB
+  ON tabA.key = tabB.key;
+QUIT;"
+  test <- ProcSQL(code_sql)
+  expect_equal(transpile(test), 'tabA %>%\n\tleft_join(tabB, by = c(\"key\" = \"key\"))')
+})
 
 # Clause WHERE ------------------------------------------------------------
 
@@ -267,6 +278,9 @@ INNER JOIN Shippers ON Orders.ShipperID = Shippers.ShipperID;
 })
 
 # TODO: Real cases tests -----------
+
+
+
 #
 # test_that("Jointure impropre", {
 #   code_sql = "SELECT Orders.OrderID, Orders.OrderDate, Customers.CustomerName

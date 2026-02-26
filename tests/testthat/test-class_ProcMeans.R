@@ -95,6 +95,25 @@ test_that("proc means : one var, correct indic", {
 })
 
 
+test_that("proc means : multiple var, no indic", {
+  sas_code = "PROC MEANS DATA=nomtab_input;
+VAR var1 var2 var3 var4 var5 var6 ;
+CLASS var2 ;
+BY var7 ;
+OUTPUT OUT=nomtab_output;
+RUN;"
+
+  test <- ProcMeans(sas_code)
+
+
+  expect_equal(
+    transpile(test),
+    "iris %>%\n\tgroup_by(var2, var7) %>%\n\tsummary()"
+  )
+})
+
+
+
 
 # Without indicators ---------------------------------------
 
@@ -144,4 +163,39 @@ test_that("proc means without var with by", {
                "sashelp.iris %>%\n\tgroup_by(Species) %>%\n\tsummary()")
 
 })
+
+
+# With unknown args (title, where) ----------------------------------------
+
+
+test_that("proc means with title", {
+  sas_code = "proc means data=cake n mean max min range std fw=8;
+var PresentScore TasteScore;
+title 'Summary of Presentation and Taste Scores';
+run;"
+  test <- ProcMeans(sas_code)
+
+  expect_equal(
+    transpile(test),
+    "cake %>%\n\tselect(PresentScore, TasteScore) %>%\n\tsummarize_all(list(n=n, mean=mean, max=max, min=min, range=range, std=std))")
+
+})
+
+
+test_that("Out of scope indicator", {
+  sas_code = "proc means data=grade maxdec=3;
+var Score;
+class Status Year;
+types () status*year;
+run;"
+  test <- ProcMeans(sas_code)
+
+  expect_equal(
+    transpile(test),
+    "grade %>%\n\tgroup_by(Status, Year) %>%\n\tsummary")
+
+})
+
+
+
 

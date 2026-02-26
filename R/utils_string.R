@@ -10,6 +10,7 @@ clean_newlines <- function(text, ...){
 
 splitws <- function(text){
   text |>
+    regex_replace(pattern = "\\s+", " ") |>
     strsplit(split = " ") |>
     unlist() |>
     trimws()

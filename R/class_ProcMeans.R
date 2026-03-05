@@ -75,6 +75,7 @@ ProcMeans <- S7::new_class(
   parent = ProcSAS,
 
   properties = list(
+    pm_stats   = S7::class_character,
     pm_var     = S7::class_character,
     pm_by      = S7::class_character,
     pm_class   = S7::class_character,
@@ -95,6 +96,24 @@ ProcMeans <- S7::new_class(
       splitws(code_net[[keyword]])
     }
 
+    ## List availble stats
+    available_stats <- c(
+      "KURT",
+      "LCLM",
+      "UCLM",
+      "SKEW",
+      "STDDEV",
+      "STD",
+      "N\\(([a-zA-z0-9._]+)\\)",
+      "MEAN",
+      "MIN",
+      "MAX",
+      "NMISS\\(([a-zA-z0-9._]+)\\)",
+      "P([0-9]+)\\(([a-zA-z0-9._]+)\\)"
+    )
+
+   # test <- sapply(c("chat", "vach", "dragon"), grepl, x = c("chat", "vache", "renard"))
+   # colSums(test)
 
     ## Output as a list
     if(!is.null(code_net$output)){
@@ -117,6 +136,7 @@ ProcMeans <- S7::new_class(
 
     new_object(
       .parent = ProcSAS(sas_code = sas_code),
+      pm_stats   = "temp",
       pm_var     = .extract_args("var"),
       pm_by      = .extract_args("by"),
       pm_class   = .extract_args("class"),

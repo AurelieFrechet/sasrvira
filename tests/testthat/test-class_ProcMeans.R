@@ -108,7 +108,7 @@ RUN;"
 
   expect_equal(
     transpile(test),
-    "iris %>%\n\tgroup_by(var2, var7) %>%\n\tsummary()"
+    "nomtab_output <- nomtab_input %>%\n\tgroup_by(var2, var7) %>%\n\tsummary()"
   )
 })
 

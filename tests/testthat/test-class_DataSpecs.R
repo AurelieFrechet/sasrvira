@@ -1,0 +1,28 @@
+test_that("Where clause =", {
+  data_statement <- "sales(where=(product='whizmo'))"
+  test <- DataSpecs(data_statement)
+  expect_equal(test@data, "sales")
+  expect_equal(test@where, "product='whizmo'")
+  expect_equal(test@keep, character(0))
+  expect_equal(test@drop, character(0))
+})
+
+
+test_that("keep clause", {
+  data_statement <- "sashelp.class (keep=name weight height)"
+  test <- DataSpecs(data_statement)
+  expect_equal(test@data, "sashelp.class")
+  expect_equal(test@where, character(0))
+  expect_equal(test@keep, c("name", "weight", "height"))
+  expect_equal(test@drop, character(0))
+})
+
+test_that("drop clause", {
+  data_statement <- "sashelp.class (drop=name weight height)"
+  test <- DataSpecs(data_statement)
+  expect_equal(test@data, "sashelp.class")
+  expect_equal(test@where, character(0))
+  expect_equal(test@keep, character(0))
+  expect_equal(test@drop, c("name", "weight", "height"))
+})
+

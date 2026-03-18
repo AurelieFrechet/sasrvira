@@ -64,13 +64,14 @@ ProcSAS <- new_class(
         regex_remove(pattern  = "proc\\s*\\w+\\b", ignore.case = T) |>
         regex_replace(pattern = "\\s?=\\s?", replacement = "=") |>
         regex_remove(pattern  = "data\\s?=", ignore.case = T) |>
-        trimws() |> splitws()
+        trimws() |> concatws() |>
+        regex_match_groups(pattern = "(^\\w+(\\([^)]*\\){1,}+)?)(.*)", perl = T)
 
       new_object(
         .parent = S7_object(),
         source = sas_code,
-        proc_data    = infos_contents[1],
-        proc_options = infos_contents[-1]
+        proc_data    = infos_contents[[1]],
+        proc_options = trimws(infos_contents[[3]])
       )
     }
 )

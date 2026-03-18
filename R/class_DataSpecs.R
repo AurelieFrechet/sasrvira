@@ -1,5 +1,5 @@
 DataSpecs <- new_class(
-  "ProcSAS",
+  "DataSpecs",
   properties = list(
     data  = S7::class_character,
     where = S7::class_character,

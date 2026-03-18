@@ -8,7 +8,7 @@ test_that("proc contents no options", {
 test_that("proc sort options", {
   sas_code <- "proc sort data=iris out = iris_sorted; run;"
   test <- ProcSAS(sas_code)
-  expect_equal(test@proc_data, "iris")
+  expect_equal(test@proc_data@data, "iris")
   expect_equal(test@proc_options, "out=iris_sorted")
   expect_error(transpile(test), "Not implemented")
 })
@@ -18,7 +18,8 @@ test_that("proc sort data specs", {
   by  descending Sepal.Lenght Petal.Lenght;
   run;"
   test <- ProcSAS(sas_code)
-  expect_equal(test@proc_data, "iris(where=(Species='viridis'))")
+  expect_equal(test@proc_data@data, "iris")
+  expect_equal(test@proc_data@where, "Species='viridis'")
   expect_equal(test@proc_options, "noprint")
 })
 

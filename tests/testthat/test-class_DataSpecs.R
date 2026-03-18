@@ -43,7 +43,7 @@ test_that("multi clauses", {
 })
 
 test_that("unexcepted clause", {
-  data_statement <- "sashelp.class (label='something' drop=name weight height)"
+  data_statement <- "sashelp.class(label='something' drop=name weight height)"
   test <- DataSpecs(data_statement)
   expect_equal(test@data, "sashelp.class")
   expect_equal(test@where, character(0))
@@ -53,6 +53,13 @@ test_that("unexcepted clause", {
   expect_equal(transpile_data_specs(test), "sashelp.class %>%\n\tselect(-name, -weight, -height)")
 })
 
+test_that("no clause", {
+  data_statement <- "sashelp.class"
+  test <- DataSpecs(data_statement)
+  expect_equal(test@data, "sashelp.class")
+
+  expect_equal(transpile_data_specs(test), "sashelp.class")
+})
 
 # Transpile only ----------------------------------------------------------
 

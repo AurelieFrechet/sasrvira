@@ -14,7 +14,7 @@ DataSpecs <- new_class(
     data_statement <- regex_replace(data_statement, "\\s+", " ")
     data_info <- regex_match_groups(
       data_statement,
-      pattern = "([A-z0-9.]+)\\s?(\\((.*)\\))"
+      pattern = "([A-z0-9.]+)\\s?(\\((.*)\\))?"
     )
 
     dataspecs <- data_info[[3]]

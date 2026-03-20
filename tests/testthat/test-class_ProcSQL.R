@@ -146,7 +146,7 @@ test_that("group by + having", {
   code_sql <- "PROC SQL; select var1, count(*) as nb from tbl1 group by var1 having nb>1; quit;"
   test <- ProcSQL(code_sql)
   expect_equal(transpile(test),
-               "tbl1 %>%\n\tgroup_by(var1) %>%\n\tsummarize(nb = n()) %>%\n\tfilter(nb>1)")
+               "tbl1 %>%\n\tgroup_by(var1) %>%\n\tsummarize(nb = n()) %>%\n\tfilter(nb > 1)")
 
 })
 

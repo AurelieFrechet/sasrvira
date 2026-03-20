@@ -13,7 +13,7 @@ test_that("test sur iris", {
   proc sql;
   select * from iris where Species=\"setosa\";
   quit;"
-  expect_equal(transastor(code_sas), "str(iris)\n  iris %>%\n\tfilter(Species == \"setosa\")")
+  expect_equal(transastor(code_sas), "iris %>%\n\tstr()\n  iris %>%\n\tfilter(Species == \"setosa\")")
 
 })
 

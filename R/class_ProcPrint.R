@@ -50,7 +50,7 @@ ProcPrint <- S7::new_class(
 # Method: transpile ----------------------------------------------------------
 
 S7::method(transpile, ProcPrint) <- function(x) {
-  code_r <- x@proc_data
+  code_r <- transpile_data_specs(x@proc_data)
   return(code_r)
 }
 

@@ -14,3 +14,23 @@ splitws <- function(text){
     unlist() |>
     trimws()
 }
+
+concatws <- function(text){
+  text |>
+    trimws() |>
+    gsub(pattern = "\\s+",
+         replacement = " ",
+         x = _,
+         perl = TRUE)
+}
+
+replace_by_ws <- function(text, pattern) {
+  text |>
+    trimws() |>
+    gsub(pattern = pattern,
+         replacement = " ",
+         x = _,
+         perl = TRUE) |>
+    concatws()
+
+}

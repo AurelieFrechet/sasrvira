@@ -3,8 +3,8 @@ test_that("proc means : multiple by and class and no indics", {
   test <- ProcMeans(sas_code)
 
   ## Correct properties
-  expect_equal(test@proc_data, "diamonds")
-  expect_equal(test@proc_options, character(0))
+  expect_equal(test@proc_data@data, "diamonds")
+  expect_equal(test@proc_options, "")
   expect_equal(test@pm_var, "carat")
   expect_equal(test@pm_by, "color")
   expect_equal(test@pm_class, "cut")

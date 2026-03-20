@@ -91,13 +91,15 @@ ProcSort <- S7::new_class(
 
 
 S7::method(transpile, ProcSort) <- function(x) {
+  dplyr_data <- transpile_data_specs(x@proc_data)
+
   sort_by <- x@ps_by |>
     regex_replace(pattern = "descending-([0-9a-zA-Z._]+)", replacement = "desc(\\1)")
 
   dplyr_groupby <- paste_function(function_name = "arrange",
                                   content = paste(sort_by, collapse = ", "))
 
-  requete_dplyr <- paste(c(x@proc_data, dplyr_groupby), collapse = " %>%\n\t")
+  requete_dplyr <- paste(c(dplyr_data, dplyr_groupby), collapse = " %>%\n\t")
 
   out_table <- x@proc_options[grepl(pattern = "out=", x = x@proc_options)]|>
     regex_remove(pattern  = "out=", ignore.case = T)

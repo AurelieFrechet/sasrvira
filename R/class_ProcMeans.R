@@ -161,8 +161,10 @@ S7::method(transpile, ProcMeans) <- function(x) {
   # data ----
   nb_vars <- length(x@pm_var)
   more_than_1_var <- nb_vars > 1 || any(grepl("-", x@pm_var))
-  is_default_stats <- length(x@proc_options) == 0
-  dplyr_data <- x@proc_data
+
+  stats <- splitws(x@proc_options)
+  is_default_stats <- length(stats) == 0
+  dplyr_data <- transpile_data_specs(x@proc_data)
 
   # select() ----
   if (!identical(x@pm_var, character(0))) {
@@ -188,12 +190,12 @@ S7::method(transpile, ProcMeans) <- function(x) {
     dplyr_summarize <- "summary()"
 
   } else if (!more_than_1_var) { # summarize
-    dplyr_summarize <- paste0(x@proc_options, "(", x@pm_var, ")") |>
+    dplyr_summarize <- paste0(stats, "(", x@pm_var, ")") |>
       transform_functions()
     dplyr_summarize <-  paste_function("summarize", paste(dplyr_summarize, collapse = ", "))
 
   } else { # summarize_all
-    dplyr_summarize <- paste(paste(x@proc_options, x@proc_options, sep = "="), collapse = ", ")
+    dplyr_summarize <- paste(paste(stats, stats, sep = "="), collapse = ", ")
     dplyr_summarize <- paste0("summarize_all(list(", dplyr_summarize, "))")
   }
 

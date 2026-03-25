@@ -3,8 +3,8 @@
   "locale": "fr_FR",
   "platform": "4.5.1",
   "metadata": {
-    "appmode": "rmd-static",
-    "primary_rmd": "inst/V1.Rmd",
+    "appmode": "shiny",
+    "primary_rmd": null,
     "primary_html": null,
     "content_category": null,
     "has_parameters": false

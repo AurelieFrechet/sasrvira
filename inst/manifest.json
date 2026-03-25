@@ -497,32 +497,37 @@
       "description": {
         "Package": "fs",
         "Title": "Cross-Platform File System Operations Based on 'libuv'",
-        "Version": "1.6.6",
-        "Authors@R": "c(\n    person(\"Jim\", \"Hester\", role = \"aut\"),\n    person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = \"aut\"),\n    person(\"Gábor\", \"Csárdi\", , \"csardi.gabor@gmail.com\", role = c(\"aut\", \"cre\")),\n    person(\"libuv project contributors\", role = \"cph\",\n           comment = \"libuv library\"),\n    person(\"Joyent, Inc. and other Node contributors\", role = \"cph\",\n           comment = \"libuv library\"),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"))\n  )",
+        "Version": "2.0.1",
+        "Authors@R": "c(\n    person(\"Jim\", \"Hester\", role = \"aut\"),\n    person(\"Hadley\", \"Wickham\", role = \"aut\"),\n    person(\"Gábor\", \"Csárdi\", role = \"aut\"),\n    person(\"Jeroen\", \"Ooms\", , \"jeroenooms@gmail.com\", role = \"cre\"),\n    person(\"libuv project contributors\", role = \"cph\",\n           comment = \"libuv library\"),\n    person(\"Joyent, Inc. and other Node contributors\", role = \"cph\",\n           comment = \"libuv library\"),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"),\n           comment = c(ROR = \"03wc8by49\"))\n  )",
         "Description": "A cross-platform interface to file system operations, built\n    on top of the 'libuv' C library.",
         "License": "MIT + file LICENSE",
         "URL": "https://fs.r-lib.org, https://github.com/r-lib/fs",
         "BugReports": "https://github.com/r-lib/fs/issues",
-        "Depends": "R (>= 3.6)",
+        "Depends": "R (>= 4.1)",
         "Imports": "methods",
         "Suggests": "covr, crayon, knitr, pillar (>= 1.0.0), rmarkdown, spelling,\ntestthat (>= 3.0.0), tibble (>= 1.1.0), vctrs (>= 0.3.0), withr",
         "VignetteBuilder": "knitr",
-        "ByteCompile": "true",
+        "SystemRequirements": "libuv: libuv-devel (rpm) or libuv1-dev (deb).\nAlternatively to build the vendored libuv 'cmake' is required.\nGNU make.",
         "Config/Needs/website": "tidyverse/tidytemplate",
         "Config/testthat/edition": "3",
+        "Config/usethis/last-upkeep": "2025-04-23",
         "Copyright": "file COPYRIGHTS",
         "Encoding": "UTF-8",
         "Language": "en-US",
-        "RoxygenNote": "7.2.3",
-        "SystemRequirements": "GNU make",
+        "RoxygenNote": "7.3.3",
         "NeedsCompilation": "yes",
-        "Packaged": "2025-04-12 09:39:13 UTC; gaborcsardi",
-        "Author": "Jim Hester [aut],\n  Hadley Wickham [aut],\n  Gábor Csárdi [aut, cre],\n  libuv project contributors [cph] (libuv library),\n  Joyent, Inc. and other Node contributors [cph] (libuv library),\n  Posit Software, PBC [cph, fnd]",
-        "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
+        "Packaged": "2026-03-23 14:30:54 UTC; jeroen",
+        "Author": "Jim Hester [aut],\n  Hadley Wickham [aut],\n  Gábor Csárdi [aut],\n  Jeroen Ooms [cre],\n  libuv project contributors [cph] (libuv library),\n  Joyent, Inc. and other Node contributors [cph] (libuv library),\n  Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>)",
+        "Maintainer": "Jeroen Ooms <jeroenooms@gmail.com>",
         "Repository": "CRAN",
-        "Date/Publication": "2025-04-12 10:40:02 UTC",
-        "Built": "R 4.5.1; x86_64-w64-mingw32; 2025-08-20 00:44:50 UTC; windows",
-        "Archs": "x64"
+        "Date/Publication": "2026-03-24 05:20:18 UTC",
+        "Built": "R 4.5.3; x86_64-w64-mingw32; 2026-03-25 00:51:05 UTC; windows",
+        "Archs": "x64",
+        "RemoteType": "standard",
+        "RemotePkgRef": "fs",
+        "RemoteRef": "fs",
+        "RemoteRepos": "https://cran.rstudio.com",
+        "RemoteSha": "2.0.1"
       }
     },
     "glue": {
@@ -766,27 +771,32 @@
       "description": {
         "Package": "lifecycle",
         "Title": "Manage the Life Cycle of your Package Functions",
-        "Version": "1.0.4",
+        "Version": "1.0.5",
         "Authors@R": "c(\n    person(\"Lionel\", \"Henry\", , \"lionel@posit.co\", role = c(\"aut\", \"cre\")),\n    person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = \"aut\",\n           comment = c(ORCID = \"0000-0003-4757-117X\")),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"))\n  )",
         "Description": "Manage the life cycle of your exported functions with shared\n    conventions, documentation badges, and user-friendly deprecation\n    warnings.",
         "License": "MIT + file LICENSE",
         "URL": "https://lifecycle.r-lib.org/, https://github.com/r-lib/lifecycle",
         "BugReports": "https://github.com/r-lib/lifecycle/issues",
         "Depends": "R (>= 3.6)",
-        "Imports": "cli (>= 3.4.0), glue, rlang (>= 1.1.0)",
-        "Suggests": "covr, crayon, knitr, lintr, rmarkdown, testthat (>= 3.0.1),\ntibble, tidyverse, tools, vctrs, withr",
+        "Imports": "cli (>= 3.4.0), rlang (>= 1.1.0)",
+        "Suggests": "covr, knitr, lintr (>= 3.1.0), rmarkdown, testthat (>=\n3.0.1), tibble, tidyverse, tools, vctrs, withr, xml2",
         "VignetteBuilder": "knitr",
         "Config/Needs/website": "tidyverse/tidytemplate, usethis",
         "Config/testthat/edition": "3",
         "Encoding": "UTF-8",
-        "RoxygenNote": "7.2.1",
+        "RoxygenNote": "7.3.3",
         "NeedsCompilation": "no",
-        "Packaged": "2023-11-06 16:07:36 UTC; lionel",
-        "Author": "Lionel Henry [aut, cre],\n  Hadley Wickham [aut] (<https://orcid.org/0000-0003-4757-117X>),\n  Posit Software, PBC [cph, fnd]",
+        "Packaged": "2026-01-07 15:00:49 UTC; lionel",
+        "Author": "Lionel Henry [aut, cre],\n  Hadley Wickham [aut] (ORCID: <https://orcid.org/0000-0003-4757-117X>),\n  Posit Software, PBC [cph, fnd]",
         "Maintainer": "Lionel Henry <lionel@posit.co>",
         "Repository": "CRAN",
-        "Date/Publication": "2023-11-07 10:10:10 UTC",
-        "Built": "R 4.5.1; ; 2025-08-20 01:31:43 UTC; windows"
+        "Date/Publication": "2026-01-08 08:00:02 UTC",
+        "Built": "R 4.5.3; ; 2026-03-22 02:59:45 UTC; windows",
+        "RemoteType": "standard",
+        "RemotePkgRef": "lifecycle",
+        "RemoteRef": "lifecycle",
+        "RemoteRepos": "https://cran.rstudio.com",
+        "RemoteSha": "1.0.5"
       }
     },
     "magrittr": {
@@ -905,7 +915,7 @@
       "description": {
         "Package": "pkgload",
         "Title": "Simulate Package Installation and Attach",
-        "Version": "1.4.1",
+        "Version": "1.5.0",
         "Authors@R": "c(\n    person(\"Hadley\", \"Wickham\", role = \"aut\"),\n    person(\"Winston\", \"Chang\", role = \"aut\"),\n    person(\"Jim\", \"Hester\", role = \"aut\"),\n    person(\"Lionel\", \"Henry\", , \"lionel@posit.co\", role = c(\"aut\", \"cre\")),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")),\n    person(\"R Core team\", role = \"ctb\",\n           comment = \"Some namespace and vignette code extracted from base R\")\n  )",
         "Description": "Simulates the process of installing a package and then\n    attaching it. This is a key part of the 'devtools' package as it\n    allows you to rapidly iterate while developing a package.",
         "License": "MIT + file LICENSE",
@@ -921,17 +931,17 @@
         "Encoding": "UTF-8",
         "RoxygenNote": "7.3.2",
         "NeedsCompilation": "no",
-        "Packaged": "2025-09-23 09:15:44 UTC; lionel",
+        "Packaged": "2026-02-02 15:16:53 UTC; lionel",
         "Author": "Hadley Wickham [aut],\n  Winston Chang [aut],\n  Jim Hester [aut],\n  Lionel Henry [aut, cre],\n  Posit Software, PBC [cph, fnd],\n  R Core team [ctb] (Some namespace and vignette code extracted from base\n    R)",
         "Maintainer": "Lionel Henry <lionel@posit.co>",
         "Repository": "CRAN",
-        "Date/Publication": "2025-09-23 10:20:02 UTC",
-        "Built": "R 4.5.1; ; 2025-09-29 02:08:56 UTC; windows",
+        "Date/Publication": "2026-02-03 06:10:46 UTC",
+        "Built": "R 4.5.3; ; 2026-03-22 03:57:34 UTC; windows",
         "RemoteType": "standard",
         "RemotePkgRef": "pkgload",
         "RemoteRef": "pkgload",
         "RemoteRepos": "https://cran.rstudio.com",
-        "RemoteSha": "1.4.1"
+        "RemoteSha": "1.5.0"
       }
     },
     "praise": {
@@ -1108,7 +1118,12 @@
         "Repository": "CRAN",
         "Date/Publication": "2025-04-11 08:40:10 UTC",
         "Built": "R 4.5.1; x86_64-w64-mingw32; 2025-08-04 00:19:44 UTC; windows",
-        "Archs": "x64"
+        "Archs": "x64",
+        "RemoteType": "standard",
+        "RemotePkgRef": "rlang",
+        "RemoteRef": "rlang",
+        "RemoteRepos": "https://cran.rstudio.com",
+        "RemoteSha": "1.1.6"
       }
     },
     "rmarkdown": {
@@ -1294,30 +1309,35 @@
       "description": {
         "Package": "testthat",
         "Title": "Unit Testing for R",
-        "Version": "3.2.3",
+        "Version": "3.3.2",
         "Authors@R": "c(\n    person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = c(\"aut\", \"cre\")),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")),\n    person(\"R Core team\", role = \"ctb\",\n           comment = \"Implementation of utils::recover()\")\n  )",
         "Description": "Software testing is important, but, in part because it is\n    frustrating and boring, many of us avoid it. 'testthat' is a testing\n    framework for R that is easy to learn and use, and integrates with\n    your existing 'workflow'.",
         "License": "MIT + file LICENSE",
         "URL": "https://testthat.r-lib.org, https://github.com/r-lib/testthat",
         "BugReports": "https://github.com/r-lib/testthat/issues",
-        "Depends": "R (>= 3.6.0)",
-        "Imports": "brio (>= 1.1.3), callr (>= 3.7.3), cli (>= 3.6.1), desc (>=\n1.4.2), digest (>= 0.6.33), evaluate (>= 1.0.1), jsonlite (>=\n1.8.7), lifecycle (>= 1.0.3), magrittr (>= 2.0.3), methods,\npkgload (>= 1.3.2.1), praise (>= 1.0.0), processx (>= 3.8.2),\nps (>= 1.7.5), R6 (>= 2.5.1), rlang (>= 1.1.1), utils, waldo\n(>= 0.6.0), withr (>= 3.0.2)",
-        "Suggests": "covr, curl (>= 0.9.5), diffviewer (>= 0.1.0), knitr,\nrmarkdown, rstudioapi, S7, shiny, usethis, vctrs (>= 0.1.0),\nxml2",
+        "Depends": "R (>= 4.1.0)",
+        "Imports": "brio (>= 1.1.5), callr (>= 3.7.6), cli (>= 3.6.5), desc (>=\n1.4.3), evaluate (>= 1.0.4), jsonlite (>= 2.0.0), lifecycle (>=\n1.0.4), magrittr (>= 2.0.3), methods, pkgload (>= 1.4.0),\npraise (>= 1.0.0), processx (>= 3.8.6), ps (>= 1.9.1), R6 (>=\n2.6.1), rlang (>= 1.1.6), utils, waldo (>= 0.6.2), withr (>=\n3.0.2)",
+        "Suggests": "covr, curl (>= 0.9.5), diffviewer (>= 0.1.0), digest (>=\n0.6.33), gh, knitr, otel, otelsdk, rmarkdown, rstudioapi, S7,\nshiny, usethis, vctrs (>= 0.1.0), xml2",
         "VignetteBuilder": "knitr",
         "Config/Needs/website": "tidyverse/tidytemplate",
         "Config/testthat/edition": "3",
         "Config/testthat/parallel": "true",
         "Config/testthat/start-first": "watcher, parallel*",
         "Encoding": "UTF-8",
-        "RoxygenNote": "7.3.2",
+        "RoxygenNote": "7.3.3",
         "NeedsCompilation": "yes",
-        "Packaged": "2025-01-11 00:11:30 UTC; hadleywickham",
+        "Packaged": "2026-01-09 17:49:32 UTC; hadleywickham",
         "Author": "Hadley Wickham [aut, cre],\n  Posit Software, PBC [cph, fnd],\n  R Core team [ctb] (Implementation of utils::recover())",
         "Maintainer": "Hadley Wickham <hadley@posit.co>",
         "Repository": "CRAN",
-        "Date/Publication": "2025-01-13 11:20:03 UTC",
-        "Built": "R 4.5.1; x86_64-w64-mingw32; 2025-09-02 09:57:28 UTC; windows",
-        "Archs": "x64"
+        "Date/Publication": "2026-01-11 09:10:02 UTC",
+        "Built": "R 4.5.3; x86_64-w64-mingw32; 2026-03-22 04:14:05 UTC; windows",
+        "Archs": "x64",
+        "RemoteType": "standard",
+        "RemotePkgRef": "testthat",
+        "RemoteRef": "testthat",
+        "RemoteRepos": "https://cran.rstudio.com",
+        "RemoteSha": "3.3.2"
       }
     },
     "tinytex": {
@@ -1481,6 +1501,10 @@
         "Built": "R 4.5.0; x86_64-w64-mingw32; 2025-06-18 00:26:50 UTC; windows",
         "Archs": "x64"
       }
+    },
+    "sasrvira": {
+      "Source": "github",
+      "Repository": "https://https://github.com/AurelieFrechet/sasrvira/"
     }
   },
   "files": {
@@ -1503,7 +1527,7 @@
       "checksum": "ea604d6014a1c830d4da92004afef626"
     },
     "inst/app.R": {
-      "checksum": "ca3a8ce811b0cd61408086d72d8b0648"
+      "checksum": "5eaee0a42ddd8c26621912940cead8ee"
     },
     "inst/S7_parent_example.R": {
       "checksum": "bfb19db27a781f21e3d746bb242ef4eb"

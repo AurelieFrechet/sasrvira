@@ -46,44 +46,96 @@
 #' @export
 ProcSQL <- S7::new_class(
   "ProcSQL",
-  properties = list(source       = S7::class_character),
-  constructor =
-    function(sas_code) {
-      new_object(.parent = S7_object(), source = sas_code)
-    }
-  # ,
-  # properties = list(select    = S7::class_character,
-  # from      = S7::class_character,
-  # where     = S7::class_character,
-  # order_by  = S7::class_character,
-  # having    = S7::class_character,
-  # join_list = S7::class_list,
-  # new_table = S7::class_character),
-  #
-  # constructor = function(sql_code){
-  #   requete <- sql_code |>
-  #     regex_remove(pattern = "proc\\s+sql\\s*;", ignore.case = T) |>
-  #     regex_remove(pattern = "quit\\s*;", ignore.case = T) |
-  #     trimws() |> replace_by_ws("\n")
-  #
-  #   sentence <- split_sql_query(
-  #     code_sql,
-  #     keywords = c(
-  #       "select",
-  #       "from",
-  #       "where",
-  #       "order by",
-  #       "having",
-  #       "group by",
-  #       "left join",
-  #       "right join",
-  #       "inner join",
-  #       "full join",
-  #       "create table"
-  #     )
-  #   )
-#
-#   }
+properties = list(
+  select    = S7::class_character,
+  from      = S7::class_character,
+  where     = S7::class_character,
+  order_by  = S7::class_character,
+  having    = S7::class_character,
+  join_list = S7::class_list,
+  new_table = S7::class_character),
+
+constructor = function(sql_code){
+  requete <- sql_code |>
+    regex_remove(pattern = "proc\\s+sql\\s*;", ignore.case = T) |>
+    regex_remove(pattern = "quit\\s*;", ignore.case = T) |
+    trimws() |> replace_by_ws("\n")
+
+  sentence <- split_sql_query(
+    code_sql,
+    keywords = c(
+      "select",
+      "from",
+      "where",
+      "order by",
+      "having",
+      "group by",
+      "left join",
+      "right join",
+      "inner join",
+      "full join",
+      "create table"
+    )
+  )
+
+  # select ----
+  select_vector <- sentence$text[(sentence$key_word == "select")] |>
+    strsplit(",") |> unlist() |> trimws()
+
+  # from ----
+  from_vector <- character(0)
+  if (any(sentence$key_word == "from")) {
+    from_expression <- sentence$text[(sentence$key_word == "from")] |>
+      strsplit(split = ",", perl = T) |>
+      unlist()
+
+    from_vector <- get_table(from_expression)
+    names(from_vector) <- get_alias(from_expression)
+  }
+
+  # where ----
+  where_expression <- sentence$text[(sentence$key_word == "where")]
+
+  # having ----
+  having_expression <-sentence$text[(sentence$key_word == "having")]
+
+  # order_by ----
+  order_by_vector <-sentence$text[(sentence$key_word == "order by")] |>
+    strsplit(",") |> unlist() |> trimws()
+
+  # join_list ----
+  join_list <- list()
+  if (any(grepl(x = sentence$key_word, pattern = "join"))) {
+    join_expression <- sentence$text[grepl(x = sentence$key_word, pattern = "join")]
+    join_types   <- sentence$key_word[grepl(x = sentence$key_word, pattern = "join")]|>
+      tolower()
+
+    join_list <- list(type = join_types,
+                      expression = join_expression)
+  }
+
+  # new_table ----
+  new_table <- character(0)
+  if (any(sentence$key_word == "create table")) {
+    lecture <- sentence$text[(sentence$key_word == "create table")] |>
+      regex_match_groups(pattern = "([\\S]+)\\s(as|like)?(\\s[\\S]+)?", ignore.case = T)
+
+    new_table <-  lecture[[1]]
+    new_table <- ifelse(lecture[[3]] == "", NA, lecture[[3]])
+  }
+
+# output object ----
+  new_object(
+    .parent = S7_object(),
+    select    = select_vector,
+    from      = from_vector,
+    where     = where_expression,
+    order_by  = order_by_vector,
+    having    = having_expression,
+    join_list = join_list,
+    new_table = new_table
+  )
+  }
 )
 
 

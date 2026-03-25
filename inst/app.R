@@ -1,3 +1,5 @@
+devtools::install_github("https://github.com/AurelieFrechet/sasrvira")
+
 library(shiny)
 library(sasrvira)
 

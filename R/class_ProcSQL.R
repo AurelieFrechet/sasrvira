@@ -53,16 +53,17 @@ properties = list(
   order_by  = S7::class_character,
   having    = S7::class_character,
   join_list = S7::class_list,
-  new_table = S7::class_character),
+  new_table = S7::class_character,
+  source    = S7::class_character),
 
 constructor = function(sql_code){
   requete <- sql_code |>
     regex_remove(pattern = "proc\\s+sql\\s*;", ignore.case = T) |>
-    regex_remove(pattern = "quit\\s*;", ignore.case = T) |
+    regex_remove(pattern = "quit\\s*;", ignore.case = T) |>
     trimws() |> replace_by_ws("\n")
 
   sentence <- split_sql_query(
-    code_sql,
+    requete,
     keywords = c(
       "select",
       "from",
@@ -121,7 +122,6 @@ constructor = function(sql_code){
       regex_match_groups(pattern = "([\\S]+)\\s(as|like)?(\\s[\\S]+)?", ignore.case = T)
 
     new_table <-  lecture[[1]]
-    new_table <- ifelse(lecture[[3]] == "", NA, lecture[[3]])
   }
 
 # output object ----
@@ -133,7 +133,8 @@ constructor = function(sql_code){
     order_by  = order_by_vector,
     having    = having_expression,
     join_list = join_list,
-    new_table = new_table
+    new_table = new_table,
+    source    = sql_code
   )
   }
 )
@@ -337,12 +338,12 @@ extract_joins <- function(join_sections){
 
 #' sql_to_dplyr
 #' @include split_code.R
-#' @param code_sql : chaine de charactère code SQL
+#' @param sql_code : chaine de charactère code SQL
 #'
 #' @return chaine de charactere
 #' @export
 #'
-sql_to_dplyr <- function(code_sql) {
+sql_to_dplyr <- function(sql_code) {
   # Déclaration des variables
   nom <- colonne <- NULL
   affectation   <- NA
@@ -356,14 +357,14 @@ sql_to_dplyr <- function(code_sql) {
   dplyr_join    <- NA
   affectation   <- NA
 
-  code_sql <- code_sql |>
+  sql_code <- sql_code |>
     concatws() |>
     regex_remove("proc sql\\s?;", ignore.case = T) |>
     regex_remove("(run|quit)\\s?;", ignore.case = T) |>
     regex_remove(";") |> trimws()
 
   # Initialisation
-  sentence <- split_sql_query(code_sql,
+  sentence <- split_sql_query(sql_code,
                               keywords = c("select",
                                            "from",
                                            "where",

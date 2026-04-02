@@ -1,4 +1,3 @@
-#' @include class_ProcSAS.R
 #' @include utils.R
 #' @include split_code.R
 #'
@@ -39,8 +38,8 @@
 #' @keywords internal
 #'
 #' @examples
-#' sas_code <- "proc SQL data=mydata;"
-#' proc <- ProcSQL(sas_code)
+#' sql_code <- "PROC SQL; select var1, var2, var3 from table; QUIT;"
+#' proc <- ProcSQL(sql_code)
 #' proc
 #'
 #' @export

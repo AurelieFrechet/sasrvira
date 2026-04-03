@@ -130,7 +130,7 @@ S7::method(transpile, ProcFreq) <- function(x) {
   all_tables <- lapply(x@pf_tables, function(table){
     m_tables <- table |>
       as.matrix()
-    m_tables[] <- paste0(x@proc_data, "$", m_tables)
+    m_tables[] <- paste0(x@proc_data@data, "$", m_tables)
     apply(m_tables, 1, paste, collapse = ", ")
   }) |>
     unlist() |>

@@ -4,7 +4,7 @@
 \alias{ProcSQL}
 \title{Parsed Representation of a SAS PROC SQL Statement}
 \usage{
-ProcSQL(sas_code)
+ProcSQL(sql_code)
 }
 \description{
 `ProcSQL` is an S7 class representing a parsed SAS `PROC SQL`
@@ -35,8 +35,8 @@ properties:
 }
 
 \examples{
-sas_code <- "proc SQL data=mydata;"
-proc <- ProcSQL(sas_code)
+sql_code <- "PROC SQL; select var1, var2, var3 from table; QUIT;"
+proc <- ProcSQL(sql_code)
 proc
 
 }

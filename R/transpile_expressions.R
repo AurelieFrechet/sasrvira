@@ -39,6 +39,8 @@ transform_conditions <- function(expr){
     regex_replace(pattern = "\\sge\\s",   replacement = " >= ") |>
     regex_replace(pattern = "\\sle\\s",   replacement = " <= ") |>
     regex_replace(pattern = "\\s?<>\\s?", replacement = " != ") |>
+    regex_replace(pattern = "\\s?\\b>\\b\\s?",  replacement = " > ") |>
+    regex_replace(pattern = "\\s?\\b<\\b\\s?",  replacement = " < ") |>
 
     # NOT IN / IN clauses
     regex_replace(pattern = "([\\S]+)\\snot\\sin\\s([a-zA-Z0-9,()]+)", replacement = "!(\\1 %in% c\\2)") |>
@@ -107,7 +109,7 @@ transform_case_when <- function(expr){
 transform_functions <- function(expr){
 
   expr <- expr |>
-    # SQL base functions
+    ## SQL base functions ----
     regex_replace(pattern = "\\bfalse\\b",       replacement = "FALSE") |>
     regex_replace(pattern = "\\btrue\\b",        replacement = "TRUE")  |>
     regex_replace(pattern = "\\bavg\\b",         replacement = "mean")  |>
@@ -117,7 +119,7 @@ transform_functions <- function(expr){
     regex_replace(pattern = "\\bcount\\(distinct\\(([a-zA-z0-9._]+)\\)\\)",
                   replacement = "\\bn_distinct(\\1)")
 
-  # proc means indicators
+  ## proc means indicators ----
   expr <- expr |>
     regex_replace(pattern = "\\bKURT\\b", replacement = "kurtosis") |>
     regex_replace(pattern = "\\bLCLM\\b", replacement = "t.test") |>
@@ -129,10 +131,19 @@ transform_functions <- function(expr){
     regex_replace(pattern = "\\bMEAN\\b", replacement = "mean") |>
     regex_replace(pattern = "\\bMIN\\b",  replacement = "min") |>
     regex_replace(pattern = "\\bMAX\\b",  replacement = "max") |>
-    regex_replace(pattern = "NMISS\\(([a-zA-z0-9._]+)\\)",        replacement = "sum(is.na(\\1))") |>
-    regex_replace(pattern = "\\bP([0-9]+)\\(([a-zA-z0-9._]+)\\)", replacement = "quantile(\\2, \\1/100)")
+    regex_replace(pattern = "\\bNMISS\\(([a-zA-z0-9._]+)\\)",        replacement = "sum(is.na(\\1))") |>
+    regex_replace(pattern = "\\bP([0-9]+)\\(([a-zA-z0-9._]+)\\)", replacement = "quantile(\\2, \\1/100)") |>
 
-  # Case when
+  ## SAS functions ----
+  ### Character / string functions ----
+  regex_replace(pattern = "\\bUPCASE\\(",  replacement = "toupper(") |>
+  regex_replace(pattern = "\\bLOWCASE\\(", replacement = "tolower(") |>
+  regex_replace(pattern = "\\bSTRIP\\(",   replacement = "trimws(") |>
+  regex_replace(pattern = "SUBSTR\\(([a-zA-z0-9._]+),\\s?([0-9]+),\\s?([0-9]+)\\)",
+                replacement = "\\bsubstr(\\1, \\2, \\2+\\3-1)")
+
+
+  ## Case when ----
   expr_case_when <-
     regex_match_groups(x = expr,
                        pattern = "case\\s([\\s\\S]+)\\send",

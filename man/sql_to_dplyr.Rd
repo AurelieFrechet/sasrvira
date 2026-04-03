@@ -4,10 +4,10 @@
 \alias{sql_to_dplyr}
 \title{sql_to_dplyr}
 \usage{
-sql_to_dplyr(code_sql)
+sql_to_dplyr(sql_code)
 }
 \arguments{
-\item{code_sql}{: chaine de charactère code SQL}
+\item{sql_code}{: chaine de charactère code SQL}
 }
 \value{
 chaine de charactere

@@ -53,7 +53,7 @@ ProcSAS <- new_class(
   "ProcSAS",
   properties = list(
     source       = S7::class_character,
-    proc_data    = S7::class_character,
+    proc_data    = DataSpecs,
     proc_options = S7::class_character
   ),
   constructor =
@@ -64,13 +64,16 @@ ProcSAS <- new_class(
         regex_remove(pattern  = "proc\\s*\\w+\\b", ignore.case = T) |>
         regex_replace(pattern = "\\s?=\\s?", replacement = "=") |>
         regex_remove(pattern  = "data\\s?=", ignore.case = T) |>
-        trimws() |> splitws()
+        trimws() |> concatws() |>
+        regex_match_groups(pattern = "(^[A-z0-9._]+(\\([^)]*\\){1,}+)?)(.*)", perl = T)
+
+
 
       new_object(
         .parent = S7_object(),
         source = sas_code,
-        proc_data    = infos_contents[1],
-        proc_options = infos_contents[-1]
+        proc_data    = DataSpecs(infos_contents[[1]]),
+        proc_options = trimws(infos_contents[[3]])
       )
     }
 )

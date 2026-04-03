@@ -49,7 +49,6 @@ ProcContents <- S7::new_class(
 
 # Method: transpile ----------------------------------------------------------
 S7::method(transpile, ProcContents) <- function(x) {
-  code_r <- paste_function("str", x@proc_data)
-  return(code_r)
+  paste(c(transpile_data_specs(x@proc_data), "str()"), collapse = " %>%\n\t")
 }
 

@@ -1,8 +1,9 @@
 
 # Options -----------------------------------------------------------------
-available_proc_means_options <- function() {
+available_proc_means_stats <- function() {
   # In transform_functions
-  c(
+  c("\\bN\\b",
+    "\\bSUM\\b",
     "\\bKURT\\b",
     "\\bLCLM\\b",
     "\\bUCLM\\b",
@@ -13,8 +14,9 @@ available_proc_means_options <- function() {
     "\\bMEAN\\b",
     "\\bMIN\\b",
     "\\bMAX\\b",
-    "NMISS\\(([a-zA-z0-9._]+)\\)",
-    "\\bP([0-9]+)\\(([a-zA-z0-9._]+)\\)\\b"
+    "\\bNMISS\\(([a-zA-z0-9._]+)\\)",
+    "\\bP([0-9]+)\\b",
+    "\\bRANGE\\b"
   )
 }
 

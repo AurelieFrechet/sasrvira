@@ -100,6 +100,16 @@ regex_match_groups <- function(x,
 
 
 #' @rdname regex_utils
+regex_match_list <- function(x,
+                             pattern,
+                             ignore.case = TRUE,
+                             perl = TRUE) {
+  combined <- paste(pattern, collapse = "|")
+  x[grepl(combined, x, ignore.case = ignore.case, perl = perl)]
+}
+
+
+#' @rdname regex_utils
 regex_count_matches <- function(x,
                          pattern,
                          ignore.case = TRUE,
@@ -136,3 +146,5 @@ regex_locate_matches <- function(x,
 
   return(data.frame(start = m_start, end = m_end))
 }
+
+

@@ -108,7 +108,7 @@ RUN;"
 
   expect_equal(
     transpile(test),
-    "nomtab_output <- nomtab_input %>%\n\tgroup_by(var2, var7) %>%\n\tsummary()"
+    "nomtab_output <- nomtab_input %>%\n\tgroup_by(var7, var2) %>%\n\tsummary()"
   )
 })
 
@@ -192,7 +192,7 @@ run;"
 
   expect_equal(
     transpile(test),
-    "grade %>%\n\tgroup_by(Status, Year) %>%\n\tsummary()")
+    "grade %>%\n\tgroup_by(Status, Year) %>%\n\tselect(Score) %>%\n\tsummary()")
 
 })
 

@@ -75,7 +75,6 @@ ProcMeans <- S7::new_class(
   parent = ProcSAS,
 
   properties = list(
-    pm_stats   = S7::class_character,
     pm_var     = S7::class_character,
     pm_by      = S7::class_character,
     pm_class   = S7::class_character,
@@ -95,25 +94,6 @@ ProcMeans <- S7::new_class(
     .extract_args <- function(keyword){
       splitws(code_net[[keyword]])
     }
-
-    ## List availble stats
-    available_stats <- c(
-      "KURT",
-      "LCLM",
-      "UCLM",
-      "SKEW",
-      "STDDEV",
-      "STD",
-      "N\\(([a-zA-z0-9._]+)\\)",
-      "MEAN",
-      "MIN",
-      "MAX",
-      "NMISS\\(([a-zA-z0-9._]+)\\)",
-      "P([0-9]+)\\(([a-zA-z0-9._]+)\\)"
-    )
-
-   # test <- sapply(c("chat", "vach", "dragon"), grepl, x = c("chat", "vache", "renard"))
-   # colSums(test)
 
     ## Output as a list
     if(!is.null(code_net$output)){
@@ -136,7 +116,6 @@ ProcMeans <- S7::new_class(
 
     new_object(
       .parent = ProcSAS(sas_code = sas_code),
-      pm_stats   = "temp",
       pm_var     = .extract_args("var"),
       pm_by      = .extract_args("by"),
       pm_class   = .extract_args("class"),
@@ -168,8 +147,8 @@ S7::method(transpile, ProcMeans) <- function(x) {
   nb_vars <- length(x@pm_var)
   more_than_1_var <- nb_vars > 1 || any(grepl("-", x@pm_var))
 
-  stats <- splitws(x@proc_options)
-  is_default_stats <- length(stats) == 0
+  proc_stats <- splitws(x@proc_options) |> regex_match_list(pattern = available_proc_means_stats())
+  is_default_stats <- length(proc_stats) == 0
   dplyr_data <- transpile_data_specs(x@proc_data)
 
   # select() ----
@@ -196,12 +175,12 @@ S7::method(transpile, ProcMeans) <- function(x) {
     dplyr_summarize <- "summary()"
 
   } else if (!more_than_1_var) { # summarize
-    dplyr_summarize <- paste0(stats, "(", x@pm_var, ")") |>
+    dplyr_summarize <- paste0(proc_stats, "(", x@pm_var, ")") |>
       transform_functions()
     dplyr_summarize <-  paste_function("summarize", paste(dplyr_summarize, collapse = ", "))
 
   } else { # summarize_all
-    dplyr_summarize <- paste(paste(stats, stats, sep = "="), collapse = ", ")
+    dplyr_summarize <- paste(paste(proc_stats, proc_stats, sep = "="), collapse = ", ")
     dplyr_summarize <- paste0("summarize_all(list(", dplyr_summarize, "))")
   }
 
@@ -211,13 +190,16 @@ S7::method(transpile, ProcMeans) <- function(x) {
     dplyr_select <- NA
     output_stats <- x@pm_output[names(x@pm_output) != "out"]
 
-    named_stats <- lapply(seq_along(output_stats), function(i) {
-      stat_function <- transform_functions(names(output_stats)[i])
-      name_output <- output_stats[[i]]
-      paste(name_output, "=", paste_function(stat_function, x@pm_var[1:length(name_output)]))
-    }) |> unlist()
+    if(length(output_stats) > 0){
+      named_stats <- lapply(seq_along(output_stats), function(i) {
+        stat_function <- transform_functions(names(output_stats)[i])
+        name_output <- output_stats[[i]]
+        paste(name_output, "=", paste_function(stat_function, x@pm_var[1:length(name_output)]))
+      }) |> unlist()
 
-    dplyr_summarize <-  paste_function("summarize", paste(named_stats, collapse = ", "))
+      dplyr_summarize <-  paste_function("summarize", paste(named_stats, collapse = ", "))
+    }
+
   }
 
   # return ----

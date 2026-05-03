@@ -55,9 +55,8 @@ base properties:
 \examples{
 sas_code <- "
 proc FREQ data=mydata;
-  var x y;
-  class group;
-  output out=summary mean=;
+  tables y * x;
+  output out=table1;
 run;
 "
 proc <- ProcFreq(sas_code)

@@ -5,6 +5,7 @@
 \alias{regex_remove}
 \alias{regex_replace}
 \alias{regex_match_groups}
+\alias{regex_match_list}
 \alias{regex_count_matches}
 \alias{regex_locate_matches}
 \title{String and regular expression utility functions}
@@ -21,6 +22,8 @@ regex_match_groups(
   perl = TRUE,
   ...
 )
+
+regex_match_list(x, pattern, ignore.case = TRUE, perl = TRUE)
 
 regex_count_matches(x, pattern, ignore.case = TRUE, perl = TRUE, ...)
 

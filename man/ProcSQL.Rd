@@ -46,6 +46,7 @@ proc
 
 Other SAS procedure classes: 
 \code{\link{ProcContents}()},
+\code{\link{ProcFreq}()},
 \code{\link{ProcMeans}()},
 \code{\link{ProcPrint}()},
 \code{\link{ProcSAS}()},

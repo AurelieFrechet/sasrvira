@@ -93,3 +93,6 @@ split_sql_query <- function(query, keywords){
 
   return(list(key_word = key_word, text = content))
 }
+
+
+

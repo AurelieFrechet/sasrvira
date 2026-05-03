@@ -45,6 +45,7 @@ proc
 [transpile()] for the generic interface.
 
 Other SAS procedure classes: 
+\code{\link{ProcFreq}()},
 \code{\link{ProcMeans}()},
 \code{\link{ProcPrint}()},
 \code{\link{ProcSAS}()},

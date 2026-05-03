@@ -89,35 +89,20 @@ ProcMeans <- S7::new_class(
 
   constructor = function(sas_code) {
     code_net <- sas_code |>
-      regex_remove(pattern  = "proc\\s*means\\s", ignore.case = T) |>
-      regex_remove(pattern  = "run\\s*;", ignore.case = T) |>
-      regex_remove(pattern  = ";") |>
-      regex_replace(pattern = "\n|=|\\s+", replacement = " ") |>
-      split_sql_query(
-        keywords = c(
-          "data",
-          "var",
-          "by",
-          "class",
-          "format",
-          "freq",
-          "id",
-          "types",
-          "weight",
-          "ways",
-          "output"
-        )
-      )
+      split_sas_args()
 
     .extract_args <- function(keyword){
-      splitws(code_net$text[(code_net$key_word == keyword)])
+      splitws(code_net[[keyword]])
     }
 
-
     ## Output as a list
-    if(!identical(.extract_args("output"), character(0))){
+    if(!is.null(code_net$output)){
+      code_output <- code_net$output |>
+        regex_replace(pattern = "=", replacement = " ") |>
+        regex_replace(pattern = "\\s+", replacement = " ")
+
       output <- split_sql_query(
-        query = code_net$text[(code_net$key_word == "output")],
+        query = code_output,
         keywords = c("out", "n", "mean", "std", "skewness", "kurtosis") # TODO  préparer un vecteur de mots clés
       )
       output_list <- as.list(output$text)
@@ -162,8 +147,8 @@ S7::method(transpile, ProcMeans) <- function(x) {
   nb_vars <- length(x@pm_var)
   more_than_1_var <- nb_vars > 1 || any(grepl("-", x@pm_var))
 
-  stats <- splitws(x@proc_options)
-  is_default_stats <- length(stats) == 0
+  proc_stats <- splitws(x@proc_options) |> regex_match_list(pattern = available_proc_means_stats())
+  is_default_stats <- length(proc_stats) == 0
   dplyr_data <- transpile_data_specs(x@proc_data)
 
   # select() ----
@@ -190,12 +175,12 @@ S7::method(transpile, ProcMeans) <- function(x) {
     dplyr_summarize <- "summary()"
 
   } else if (!more_than_1_var) { # summarize
-    dplyr_summarize <- paste0(stats, "(", x@pm_var, ")") |>
+    dplyr_summarize <- paste0(proc_stats, "(", x@pm_var, ")") |>
       transform_functions()
     dplyr_summarize <-  paste_function("summarize", paste(dplyr_summarize, collapse = ", "))
 
   } else { # summarize_all
-    dplyr_summarize <- paste(paste(stats, stats, sep = "="), collapse = ", ")
+    dplyr_summarize <- paste(paste(proc_stats, proc_stats, sep = "="), collapse = ", ")
     dplyr_summarize <- paste0("summarize_all(list(", dplyr_summarize, "))")
   }
 
@@ -205,13 +190,16 @@ S7::method(transpile, ProcMeans) <- function(x) {
     dplyr_select <- NA
     output_stats <- x@pm_output[names(x@pm_output) != "out"]
 
-    named_stats <- lapply(seq_along(output_stats), function(i) {
-      stat_function <- transform_functions(names(output_stats)[i])
-      name_output <- output_stats[[i]]
-      paste(name_output, "=", paste_function(stat_function, x@pm_var[1:length(name_output)]))
-    }) |> unlist()
+    if(length(output_stats) > 0){
+      named_stats <- lapply(seq_along(output_stats), function(i) {
+        stat_function <- transform_functions(names(output_stats)[i])
+        name_output <- output_stats[[i]]
+        paste(name_output, "=", paste_function(stat_function, x@pm_var[1:length(name_output)]))
+      }) |> unlist()
 
-    dplyr_summarize <-  paste_function("summarize", paste(named_stats, collapse = ", "))
+      dplyr_summarize <-  paste_function("summarize", paste(named_stats, collapse = ", "))
+    }
+
   }
 
   # return ----

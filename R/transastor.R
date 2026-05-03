@@ -50,6 +50,15 @@ transastor <- function(sas_code) {
           },
           "proc means" = {
             transpile(ProcMeans(code))
+          },
+          "proc print" = {
+            transpile(ProcPrint(code))
+          },
+          "proc sort" = {
+            transpile(ProcSort(code))
+          },
+          "proc freq" = {
+            transpile(ProcFreq(code))
           }
         )
       }

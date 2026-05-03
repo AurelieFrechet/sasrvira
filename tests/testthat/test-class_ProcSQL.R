@@ -104,13 +104,13 @@ test_that("sql_dplyr_select : calcul avec nouvele var", {
 
 
 test_that("select * case", {
-  code_sql <-"PROC SQL;
-  SELECT * AS tabC
+  sql_code <-"PROC SQL;
+  SELECT *
   FROM tabA
   LEFT JOIN tabB
   ON tabA.key = tabB.key;
 QUIT;"
-  test <- ProcSQL(code_sql)
+  test <- ProcSQL(sql_code)
   expect_equal(transpile(test), 'tabA %>%\n\tleft_join(tabB, by = c(\"key\" = \"key\"))')
 })
 
